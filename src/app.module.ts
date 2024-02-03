@@ -16,6 +16,9 @@ import { Level } from './level/entities/level.entity';
 import { Job } from './job/entities/job.entity';
 import { Company } from './company/entities/company.entity';
 import { Api } from './api/entities/api.entity';
+import { AuthModule } from './auth/auth.module';
+import { LocalStrategy } from './auth/local.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -37,8 +40,10 @@ import { Api } from './api/entities/api.entity';
     RoleModule,
     ApiModule,
     LevelModule,
+    AuthModule,
+    PassportModule.register({ defaultStrategy: 'local' })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LocalStrategy],
 })
 export class AppModule {}
