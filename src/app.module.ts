@@ -19,6 +19,7 @@ import { Api } from './api/entities/api.entity';
 import { AuthModule } from './auth/auth.module';
 import { LocalStrategy } from './auth/local.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { PassportModule } from '@nestjs/passport';
     ApiModule,
     LevelModule,
     AuthModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, LocalStrategy],
