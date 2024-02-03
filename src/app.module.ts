@@ -41,7 +41,6 @@ import { PassportModule } from '@nestjs/passport';
     ApiModule,
     LevelModule,
     AuthModule,
-    PassportModule.register({ defaultStrategy: 'local' })
   ],
   controllers: [AppController],
   providers: [AppService, LocalStrategy],
