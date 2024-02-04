@@ -7,27 +7,27 @@ import { UpdateResumeDto } from './dto/update-resume.dto';
 export class ResumeController {
   constructor(private readonly resumeService: ResumeService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createResumeDto: CreateResumeDto) {
     return this.resumeService.create(createResumeDto);
   }
 
-  @Get()
+  @Get('read')
   findAll() {
     return this.resumeService.findAll();
   }
 
-  @Get(':id')
+  @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.resumeService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateResumeDto: UpdateResumeDto) {
     return this.resumeService.update(+id, updateResumeDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.resumeService.remove(+id);
   }

@@ -1,26 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { Role } from './entities/role.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Api } from 'src/api/entities/api.entity';
 
 @Injectable()
 export class RoleService {
+  constructor(
+    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+  ) {}
+
   create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+    const role: Role = new Role();
+    role.description = createRoleDto.description;
+    role.name = createRoleDto.name;
+    return this.roleRepository.save(role);
   }
 
   findAll() {
-    return `This action returns all role`;
+    return this.roleRepository.find({
+      relations: {
+        apis: true,
+        users: true,
+      },
+    });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} role`;
+    return this.roleRepository.findOne({
+      where: { id },
+      relations: {
+        apis: true,
+        users: true,
+      },
+    });
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async update(id: number, updateRoleDto: UpdateRoleDto) {
+    try {
+      const existRole = await this.findOne(id);
+
+      if (existRole) {
+        const apis = updateRoleDto.apiIds.map((id) => ({ ...new Api(), id }));
+        existRole.apis= apis
+      }      
+      return this.roleRepository.save(existRole)
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   remove(id: number) {
-    return `This action removes a #${id} role`;
+    return this.roleRepository.delete(id)
   }
 }

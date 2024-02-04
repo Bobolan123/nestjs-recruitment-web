@@ -7,27 +7,27 @@ import { UpdateJobDto } from './dto/update-job.dto';
 export class JobController {
   constructor(private readonly jobService: JobService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createJobDto: CreateJobDto) {
     return this.jobService.create(createJobDto);
   }
 
-  @Get()
+  @Get('read')
   findAll() {
     return this.jobService.findAll();
   }
 
-  @Get(':id')
+  @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.jobService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto) {
     return this.jobService.update(+id, updateJobDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.jobService.remove(+id);
   }

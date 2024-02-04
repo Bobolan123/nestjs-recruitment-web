@@ -31,5 +31,5 @@ export class Role {
       referencedColumnName: "id"
   }
   })  
-  categories: Api[]
+  apis: Api[] 
 }

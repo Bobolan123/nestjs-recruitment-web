@@ -7,27 +7,27 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createCompanyDto: CreateCompanyDto) {
     return this.companyService.create(createCompanyDto);
   }
 
-  @Get()
+  @Get('read')
   findAll() {
     return this.companyService.findAll();
   }
 
-  @Get(':id')
+  @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.companyService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
     return this.companyService.update(+id, updateCompanyDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.companyService.remove(+id);
   }

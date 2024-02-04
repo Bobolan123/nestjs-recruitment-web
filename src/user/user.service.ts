@@ -17,6 +17,7 @@ export class UserService {
     const hash = await bcrypt.hash(password, saltOrRounds); 
     return hash
   }
+  
   async create(createUserDto: CreateUserDto) {
     const user: User = new User();
     user.name = createUserDto.name;
@@ -54,5 +55,20 @@ export class UserService {
 
   remove(id: number) {
     return this.userRepository.delete(id);
+  }
+
+  findOneUserWithRoles(email: string): Promise<User> {
+    return this.userRepository.findOne({
+      where: {
+        email: email
+      },
+      join: {
+        alias: 'user',
+        leftJoinAndSelect: {
+          role: 'user.role',
+          api: 'role.apis',
+        },
+      },
+    });
   }
 }

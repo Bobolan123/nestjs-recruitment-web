@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { CreateApiDto } from './dto/create-api.dto';
 import { UpdateApiDto } from './dto/update-api.dto';
+import { Api } from './entities/api.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ApiService {
+  constructor(
+    @InjectRepository(Api) private readonly apiRepository: Repository<Api>,
+  ) {}
+
   create(createApiDto: CreateApiDto) {
-    return 'This action adds a new api';
+    const api = new Api()
+    api.endpoint = createApiDto.endpoint
+    api.description = createApiDto.description
+    return this.apiRepository.save(api)
   }
 
   findAll() {
-    return `This action returns all api`;
+    return this.apiRepository.find()
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} api`;
+    return this.apiRepository.findOne({
+      where: {id}
+    })
   }
 
-  update(id: number, updateApiDto: UpdateApiDto) {
-    return `This action updates a #${id} api`;
+  async update(id: number, updateApiDto: UpdateApiDto) {
+    try {
+      const existApi = await this.findOne(id);
+      if (existApi) {
+        existApi.endpoint = updateApiDto.endpoint
+        existApi.description = updateApiDto.description
+      }      
+      return this.apiRepository.save(existApi)
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   remove(id: number) {
-    return `This action removes a #${id} api`;
+    return this.apiRepository.delete(id)
   }
 }
