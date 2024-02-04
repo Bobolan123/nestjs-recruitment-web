@@ -1,12 +1,15 @@
 import { Controller, Post, UseGuards, Request, Get } from '@nestjs/common';
-import { LocalAuthGuard } from './local-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { SkipAuth } from './SkipAuth';
+import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard.ts';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @SkipAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
@@ -18,4 +21,12 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
+ 
+  @UseGuards(RefreshJwtAuthGuard)
+  @SkipAuth()
+  @Post('refresh')
+  async refreshToken(@Request() req) {
+    return this.authService.refreshToken(req.user);
+  }
+  
 }

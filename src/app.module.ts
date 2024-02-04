@@ -17,7 +17,7 @@ import { Job } from './job/entities/job.entity';
 import { Company } from './company/entities/company.entity';
 import { Api } from './api/entities/api.entity';
 import { AuthModule } from './auth/auth.module';
-import { LocalStrategy } from './auth/local.strategy';
+import { LocalStrategy } from './auth/strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 
