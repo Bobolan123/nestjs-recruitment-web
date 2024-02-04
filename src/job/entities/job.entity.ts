@@ -11,8 +11,23 @@ export class Job {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'varchar'})
+  name: string;
+
+  @Column({ type: 'varchar'})
+  description: string;
+
+  @Column({ type: 'varchar'})
+  skills: [];
+
+  @Column({ type: 'integer'})
+  count: number;
+
   @Column({ type: 'varchar', length: 30 })
   status: string;
+
+  @Column({ type: 'integer'})
+  salary: number;
 
   @OneToMany(() => Resume, (resume) => resume.job)
   resumes: Resume[]

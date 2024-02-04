@@ -9,7 +9,7 @@ export class Level {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'enum', enum:['intern', 'fresher', 'junior', 'senior'] })
   name: string;
 
   @OneToMany(() => Job, job => job.level)
