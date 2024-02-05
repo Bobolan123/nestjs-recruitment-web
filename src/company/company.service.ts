@@ -11,20 +11,26 @@ export class CompanyService {
     @InjectRepository(Company) private readonly companyRepository: Repository<Company>,
   ) {}
 
-  create(createCompanyDto: CreateCompanyDto) {
-    const company = new Company()
-    company.name = createCompanyDto.name
-    company.description = createCompanyDto.description
-    company.logo = createCompanyDto.logo
-    company.location = createCompanyDto.location
-    return this.companyRepository.save(company)
+  async create(createCompanyDto: CreateCompanyDto) {
+    const company = new Company();
+    company.name = createCompanyDto.name;
+    company.description = createCompanyDto.description;
+    company.location = createCompanyDto.location;
+    // Check if logo is present before saving
+    if (createCompanyDto.logo) {
+      // Convert Express.Multer.File to Buffer
+      const logoBuffer = Buffer.from(createCompanyDto.logo.buffer);
+      company.logo = logoBuffer;
+      company.filename = createCompanyDto.filename
+    }
+    return this.companyRepository.save(company);
   }
 
   findAll() {
     return this.companyRepository.find()
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.companyRepository.findOne({
       where:{id}
     })

@@ -20,6 +20,8 @@ import { AuthModule } from './auth/auth.module';
 import { LocalStrategy } from './auth/strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
+import { multerConfig } from 'multer.config';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { ConfigModule } from '@nestjs/config';
     LevelModule,
     AuthModule,
     ConfigModule.forRoot(),
+    MulterModule.register(multerConfig),
   ],
   controllers: [AppController],
   providers: [AppService, LocalStrategy],

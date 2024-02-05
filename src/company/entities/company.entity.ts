@@ -9,17 +9,21 @@ export class Company {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable:true })
   name: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar',nullable:true })
   description: string;
 
-  @Column({ type: 'varchar' })
-  logo: string;
+  @Column({ type: 'bytea', nullable: true })
+  logo: Buffer;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar',nullable:true })
   location: string;
+
+  @Column({ type: 'varchar',nullable:true })
+  filename: string;
+
 
   @OneToMany(() => Job, job => job.company)
   jobs: Job[]

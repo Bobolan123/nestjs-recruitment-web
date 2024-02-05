@@ -1,9 +1,15 @@
+// create-company.dto.ts
+import { IsNotEmpty } from 'class-validator';
+import { Express } from 'express';
+
 export class CreateCompanyDto {
-    name:string
+  name: string;
 
-    description:string
+  description: string;
 
-    logo: string
+  location: string;
 
-    location: string
+  filename: string;
+  
+  logo: Express.Multer.File;
 }
