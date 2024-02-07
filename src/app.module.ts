@@ -22,6 +22,8 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from 'multer.config';
+import { APP_FILTER } from '@nestjs/core';
+import { GlobalExceptionFilter } from './error.interceptor';
 
 @Module({
   imports: [
@@ -48,6 +50,10 @@ import { multerConfig } from 'multer.config';
     MulterModule.register(multerConfig),
   ],
   controllers: [AppController],
-  providers: [AppService, LocalStrategy],
+  providers: [AppService, LocalStrategy,
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },],
 })
 export class AppModule {}

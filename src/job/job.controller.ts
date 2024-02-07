@@ -12,7 +12,7 @@ export class JobController {
     return this.jobService.create(createJobDto);
   }
 
-  @Get('readAll')
+  @Get('readAllJobs')
   findAll() {
     return this.jobService.findAll();
   }

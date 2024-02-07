@@ -38,7 +38,7 @@ export class CompanyController {
     }
   }
 
-  @Get('read')
+  @Get('readAll')
   findAll() {
     return this.companyService.findAll();
   }
