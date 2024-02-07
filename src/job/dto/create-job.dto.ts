@@ -6,7 +6,7 @@ export class CreateJobDto {
 
     description:string
 
-    skills:[]
+    skills:string[]
 
     count:number
 

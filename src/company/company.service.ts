@@ -41,6 +41,6 @@ export class CompanyService {
   }
 
   remove(id: number) {
-    return this.companyRepository.delete(id)
+    return this.companyRepository.delete({})
   }
 }

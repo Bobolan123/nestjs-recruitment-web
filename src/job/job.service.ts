@@ -16,25 +16,26 @@ export class JobService {
     job.name = createJobDto.name;
     job.description = createJobDto.description;
     job.skills = createJobDto.skills;
-    job.count = createJobDto.count;
+    job.count = 0;
     job.status = createJobDto.status;
     job.salary = createJobDto.salary;
     job.company = createJobDto.company;
     return this.jobRepository.save(job);
   }
 
-  findAll() {
-    return this.jobRepository.find({
+  async findAll() {
+    return await this.jobRepository.find({
       relations: {
         company: true,
         level: true,
         resumes: true,
       },
-    });
+    }); 
   }
 
   findOne(id: number) {
     return this.jobRepository.findOne({
+      where:{id},
       relations: {
         company: true,
         level: true,

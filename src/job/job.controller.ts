@@ -12,12 +12,12 @@ export class JobController {
     return this.jobService.create(createJobDto);
   }
 
-  @Get('read')
+  @Get('readAll')
   findAll() {
     return this.jobService.findAll();
   }
 
-  @Get('read/:id')
+  @Get('readJob/:id')
   findOne(@Param('id') id: string) {
     return this.jobService.findOne(+id);
   }
