@@ -69,6 +69,39 @@ export class CompanyService {
     });
   }
 
+
+  async findTopCompany(): Promise<IReturn<Company[]>> {
+    try {
+      const allCompanies = await this.companyRepository.find();
+      if (allCompanies && allCompanies.length > 3) {
+        const topCompanies = allCompanies.slice(0, 4);
+        return {
+          statusCode: 200,
+          message: 'Successfully retrieved top companies',
+          data: topCompanies,
+        };
+      } else if (allCompanies && allCompanies.length < 4) {
+        return {
+          statusCode: 200,
+          message: 'Successfully retrieved top companies',
+          data: allCompanies,
+        };
+      } else {
+        return {
+          statusCode: 404,
+          message: 'No companies found',
+          data: null,
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: 'Internal server error',
+        error: error.message,
+      };
+    }
+  }
+
   async update(id: number, updateCompanyDto: UpdateCompanyDto): Promise<IReturn<Company>> {
     try {
       const company = await this.findOne(id);

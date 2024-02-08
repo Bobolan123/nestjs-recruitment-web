@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors } from '@nestjs/common';
 import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
+import { DifferencesDateInterceptor } from 'src/company/interceptors/differencesDate.interceptor';
 
 @Controller('job')
 export class JobController {
@@ -12,7 +13,8 @@ export class JobController {
     return this.jobService.create(createJobDto);
   }
 
-  @Get('readAllJobs')
+  @UseInterceptors(DifferencesDateInterceptor)
+  @Get('readAllJob')
   findAll() {
     return this.jobService.findAll();
   }

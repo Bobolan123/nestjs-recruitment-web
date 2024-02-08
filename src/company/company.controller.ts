@@ -38,7 +38,7 @@ export class CompanyController {
     }
   }
 
-  @Get('readAll')
+  @Get('readAllCompany')
   findAll() {
     return this.companyService.findAll();
   }
@@ -46,6 +46,11 @@ export class CompanyController {
   @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.companyService.findOne(+id);
+  }
+
+  @Get('readTopCompany')
+  findTopCompany() {
+    return this.companyService.findTopCompany();
   }
 
   @Patch('update/:id')
@@ -71,7 +76,7 @@ export class CompanyController {
     if (!contentType) {
       return res.status(500).send('Internal Server Error');
     }
-    const allowedImageTypes = ['png', 'jpg'];
+    const allowedImageTypes = ['png', 'jpg','jpeg'];
 
     if (allowedImageTypes.some(type => contentType.includes(type))) {
       // Set appropriate headers for image response
