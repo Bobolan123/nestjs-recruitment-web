@@ -22,7 +22,8 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<IReturn<User>> {
     try {
       const existUser = await this.findOneByEmail(createUserDto.email);
-      if (existUser.data && existUser.statusCode === 201) {
+      console.log(existUser)
+      if (existUser?.statusCode === 404) {
         const user: User = new User();
         user.name = createUserDto.name;
         user.age = createUserDto.age;
@@ -140,7 +141,7 @@ export class UserService {
       user.name = updateUserDto.name;
       user.age = updateUserDto.age;
       user.email = updateUserDto.email;
-      user.password = updateUserDto.password;
+      user.password = await this.hashPassword(updateUserDto.password);
       user.gender = updateUserDto.gender;
       user.role = updateUserDto.role;
       await this.userRepository.save(user);

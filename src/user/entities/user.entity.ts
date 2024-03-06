@@ -1,6 +1,6 @@
 import { Resume } from 'src/resume/entities/resume.entity';
 import { Role } from 'src/role/entities/role.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -19,13 +19,13 @@ export class User {
   @Column({ type: 'varchar'})
   password: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
   age: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   location: string;
 
-  @Column({ type: 'enum', enum: ['male', 'female'] })
+  @Column({ type: 'enum', enum: ['male', 'female'], nullable: true })
   /**
    * m - male
    * f - female
@@ -37,4 +37,17 @@ export class User {
 
   @OneToMany(() => Resume, (resume) => resume.user)
   resumes: Resume[]
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  public created_at: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  public updated_at: Date;
 }

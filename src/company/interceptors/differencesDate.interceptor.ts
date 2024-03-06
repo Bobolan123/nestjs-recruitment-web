@@ -44,7 +44,6 @@ import {
             const currentTime = new Date();
             const timeDifference = currentTime.getTime() - createdAt.getTime();
             const formattedDifference = this.formatTimeDifference(timeDifference);
-            console.log(formattedDifference)
             return { ...job, timeDifference: formattedDifference } as IJobWithTimeDifference; // Cast to IJobWithTimeDifference
           });
           return { data: newData };

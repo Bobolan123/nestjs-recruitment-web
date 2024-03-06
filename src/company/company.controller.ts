@@ -29,16 +29,16 @@ export class CompanyController {
     @UploadedFile() logo: Express.Multer.File,
   ) {
     const allowedImageTypes = ['png', 'jpg'];
-    if (allowedImageTypes.some(type => logo.originalname.includes(type))) {
+    if (allowedImageTypes.some((type) => logo.originalname.includes(type))) {
       createCompanyDto.logo = logo; // Attach the logo file to the DTO
-      createCompanyDto.filename = logo.originalname
+      createCompanyDto.filename = logo.originalname;
       return this.companyService.create(createCompanyDto);
-    } else{
-      return {}
+    } else {
+      return {};
     }
   }
 
-  @Get('readAllCompany')
+  @Get('readCompanies')
   findAll() {
     return this.companyService.findAll();
   }
@@ -54,8 +54,20 @@ export class CompanyController {
   }
 
   @Patch('update/:id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companyService.update(+id, updateCompanyDto);
+  @UseInterceptors(FileInterceptor('logo')) // 'logo' should match the property name in CreateCompanyDto
+  update(
+    @Param('id') id: string,
+    @Body() updateCompanyDto: UpdateCompanyDto,
+    @UploadedFile() logo: Express.Multer.File,
+  ) {
+    const allowedImageTypes = ['png', 'jpg'];
+    if (allowedImageTypes.some((type) => logo.originalname.includes(type))) {
+      updateCompanyDto.logo = logo; // Attach the logo file to the DTO
+      updateCompanyDto.filename = logo.originalname;
+      return this.companyService.update(+id, updateCompanyDto);
+    } else {
+      return {};
+    }
   }
 
   @Delete('delete/:id')
@@ -76,9 +88,9 @@ export class CompanyController {
     if (!contentType) {
       return res.status(500).send('Internal Server Error');
     }
-    const allowedImageTypes = ['png', 'jpg','jpeg'];
+    const allowedImageTypes = ['png', 'jpg', 'jpeg'];
 
-    if (allowedImageTypes.some(type => contentType.includes(type))) {
+    if (allowedImageTypes.some((type) => contentType.includes(type))) {
       // Set appropriate headers for image response
       res.setHeader('Content-Type', contentType);
 
