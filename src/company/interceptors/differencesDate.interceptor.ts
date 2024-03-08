@@ -7,7 +7,6 @@ import {
   import { Observable } from 'rxjs';
   import { map } from 'rxjs/operators';
   import { Company } from '../entities/company.entity';
-  import { Level } from 'src/level/entities/level.entity';
   
   export interface Response<T> {
     data: T;
@@ -21,7 +20,7 @@ import {
     status: string;
     salary: number;
     company: Company;
-    level: Level;
+    level: string;
     created_at: string;
   }
   

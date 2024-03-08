@@ -61,7 +61,7 @@ export class JobService {
       where: { id },
       relations: {
         company: true,
-        level: true,
+        skills: true,
         resumes: true,
       },
     });

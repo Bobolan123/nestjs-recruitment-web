@@ -1,10 +1,12 @@
 import { Company } from 'src/company/entities/company.entity';
-import { Level } from 'src/level/entities/level.entity';
 import { Resume } from 'src/resume/entities/resume.entity';
+import { Skill } from 'src/skills/entities/skill.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -25,9 +27,6 @@ export class Job {
   @Column({ type: 'varchar' })
   description: string;
 
-  @Column({ type: 'varchar' })
-  skills: string[];
-
   @Column({ type: 'integer' })
   count: number;
 
@@ -43,14 +42,25 @@ export class Job {
   @ManyToOne(() => Company, (company) => company.jobs)
   company: Company;
 
-  @ManyToOne(() => Level, (level) => level.jobs)
-  level: Level;
+  @ManyToMany(() => Skill)
+  @JoinTable({
+    name:"job_skill",
+    joinColumn: {
+      name: "job_id",
+      referencedColumnName: "id"
+  },
+  inverseJoinColumn: {
+      name: "skill_id",
+      referencedColumnName: "id"
+  }
+  })  
+  skills: Skill[] 
 
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
-  public created_at: Date;
+  public created_at: Date; 
 
   @UpdateDateColumn({
     type: 'timestamp',

@@ -22,7 +22,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<IReturn<User>> {
     try {
       const existUser = await this.findOneByEmail(createUserDto.email);
-      console.log(existUser)
+      console.log(existUser);
       if (existUser?.statusCode === 404) {
         const user: User = new User();
         user.name = createUserDto.name;
@@ -101,7 +101,10 @@ export class UserService {
 
   async findOneByEmail(email: string): Promise<IReturn<User | undefined>> {
     try {
-      const user = await this.userRepository.findOne({ where: { email } });
+      const user = await this.userRepository.findOne({
+        where: { email },
+        relations: { role: true },
+      });
       if (user) {
         return {
           statusCode: 200,

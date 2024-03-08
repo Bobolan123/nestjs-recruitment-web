@@ -1,12 +1,12 @@
 import { Company } from "src/company/entities/company.entity"
-import { Level } from "src/level/entities/level.entity"
+import { Skill } from "src/skills/entities/skill.entity"
 
 export class CreateJobDto {
     name:string
 
     description:string
 
-    skills:string[]
+    skills:Skill[]
 
     count:number
 
@@ -16,5 +16,5 @@ export class CreateJobDto {
 
     company:Company
 
-    level:Level
+    level:string
 }
