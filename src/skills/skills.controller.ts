@@ -7,27 +7,27 @@ import { UpdateSkillDto } from './dto/update-skill.dto';
 export class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createSkillDto: CreateSkillDto) {
     return this.skillsService.create(createSkillDto);
   }
 
-  @Get()
+  @Get('read')
   findAll() {
     return this.skillsService.findAll();
   }
 
-  @Get(':id')
+  @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.skillsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateSkillDto: UpdateSkillDto) {
     return this.skillsService.update(+id, updateSkillDto);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.skillsService.remove(+id);
   }
