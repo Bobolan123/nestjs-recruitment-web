@@ -15,14 +15,15 @@ export class ResumeService {
     try {
       const resume = new Resume();
       resume.status = createResumeDto.status;
+      resume.job = createResumeDto.job
       resume.user = createResumeDto.user;
       const savedResume = await this.resumeRepository.save(resume);
       return {
         statusCode: 200,
         message: 'Resume created successfully',
         data: savedResume,
-      };
-    } catch (error) {
+      }; 
+    } catch (error) { 
       return {
         statusCode: 500,
         message: 'Internal server error',
@@ -34,7 +35,10 @@ export class ResumeService {
   async findAll(): Promise<IReturn<Resume[]>> {
     try {
       const resumes = await this.resumeRepository.find({
-        relations: ['user', 'job'],
+        relations: ['user', 'job','job.company'],
+        order: {
+          id:"ASC"
+      }
       });
       return {
         statusCode: 200,
@@ -54,7 +58,7 @@ export class ResumeService {
     try {
       const resume = await this.resumeRepository.findOne({
         where: { id },
-        relations: ['user', 'job'],
+        relations: ['user', 'job','job.company'],
       });
       return resume
     } catch (error) {
@@ -67,6 +71,7 @@ export class ResumeService {
       const existResume = await this.findOne(id);
       if (existResume) {
         existResume.job = updateResumeDto.job;
+        existResume.status = updateResumeDto.status
         await this.resumeRepository.save(existResume);
         return {
           statusCode: 200,
@@ -103,6 +108,32 @@ export class ResumeService {
         message: `Resume with ID ${id} removed successfully`,
         data: null,
       };
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: 'Internal server error',
+        error: error.message,
+      };
+    }
+  }
+
+  async uploadCVFile(id: number, cvFile:Express.Multer.File): Promise<IReturn<Resume>> {
+    try {
+      const existResume = await this.findOne(id);
+      if (existResume) {
+        existResume.cvFile = cvFile
+        await this.resumeRepository.save(existResume);
+        return {
+          statusCode: 200,
+          message: 'Resume updated successfully',
+          data: existResume,
+        };
+      } else {
+        return {
+          statusCode: 404,
+          message: 'Resume not found',
+        };
+      }
     } catch (error) {
       return {
         statusCode: 500,

@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { GetCvUserInterceptor } from './interceptors/getCvUser.interceptor';
 
 @Controller('user')
 export class UserController {
@@ -15,6 +25,12 @@ export class UserController {
   @Get('read')
   findAll() {
     return this.userService.findAll();
+  }
+
+  @UseInterceptors(GetCvUserInterceptor)
+  @Get('read/cv/:id')
+  findProfileCv(@Param('id') id: string) {
+    return this.userService.findProfileCv(+id);
   }
 
   @Get('read/:id')

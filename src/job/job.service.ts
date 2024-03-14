@@ -18,10 +18,14 @@ export class JobService {
       job.name = createJobDto.name;
       job.description = createJobDto.description;
       job.skills = createJobDto.skills;
-      job.count = 0;
+      job.count = createJobDto.count;
+      job.location = createJobDto.location;
       job.status = createJobDto.status;
       job.salary = createJobDto.salary;
       job.company = createJobDto.company;
+      job.level = createJobDto.level;
+      job.startDate = createJobDto.startDate;
+      job.endDate = createJobDto.endDate;
       const savedJob = await this.jobRepository.save(job);
       return {
         statusCode: 200,
@@ -40,7 +44,7 @@ export class JobService {
   async findAll(): Promise<IReturn<Job[]>> {
     try {
       const jobs = await this.jobRepository.find({
-        relations: ['company', 'level', 'resumes'],
+        relations: ['company', 'skills', 'resumes'],
       });
       return {
         statusCode: 200,

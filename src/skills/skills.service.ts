@@ -13,25 +13,27 @@ export class SkillsService {
     private readonly skillRepository: Repository<Skill>,
   ) {}
 
-  async create(createSkillDto: CreateSkillDto): Promise<IReturn<Skill>> {
-    try {
-      const skill = new Skill();
-      skill.name = createSkillDto.name;
-      // Set other properties as needed from createSkillDto
-      const savedSkill = await this.skillRepository.save(skill);
-      return {
-        statusCode: 200,
-        message: 'Skill created successfully',
-        data: savedSkill,
-      };
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+async create(createSkillDto: CreateSkillDto): Promise<IReturn<Skill>> {
+  try {
+    const { name } = createSkillDto; // Extract the name from the DTO
+    const skill = new Skill();
+    skill.name = name; // Assign the name to the skill
+    // You can assign other properties as needed
+    const savedSkill = await this.skillRepository.save(skill);
+    return {
+      statusCode: 200,
+      message: 'Skill created successfully',
+      data: savedSkill,
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      message: 'Internal server error',
+      error: error.message,
+    };
   }
+}
+
 
   async findAll(): Promise<IReturn<Skill[]>> {
     try {

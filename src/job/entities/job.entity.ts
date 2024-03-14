@@ -24,17 +24,29 @@ export class Job {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'varchar' })
-  description: string;
+  @Column({ type: 'varchar', nullable: true })
+  location: string;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'varchar', nullable: true })
+  level: string;
+
+  @Column({ type: 'json', nullable: true })
+  description: string
+
+  @Column({ type: 'integer', nullable: true })
   count: number;
 
-  @Column({ type: 'varchar', length: 30 })
-  status: string;
+  @Column({ nullable:true  })
+  status: Boolean;
 
   @Column({ type: 'integer' })
   salary: number;
+
+  @Column({ type: 'varchar',nullable:true  })
+  startDate: string;
+
+  @Column({ type: 'varchar', nullable:true })
+  endDate: string;
 
   @OneToMany(() => Resume, (resume) => resume.job)
   resumes: Resume[];

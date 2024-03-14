@@ -76,7 +76,7 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
-        relations: ['role'],
+        relations: ['role', 'resumes', 'resumes.job', 'resumes.job.company'],
       });
       if (user) {
         return {
@@ -99,6 +99,19 @@ export class UserService {
     }
   }
 
+  async findProfileCv(id: number): Promise<User> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+        relations: ['role', 'resumes', 'resumes.job', 'resumes.job.company'],
+      });
+      if (user) {
+        return user;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async findOneByEmail(email: string): Promise<IReturn<User | undefined>> {
     try {
       const user = await this.userRepository.findOne({
