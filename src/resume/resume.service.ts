@@ -5,25 +5,34 @@ import { Resume } from './entities/resume.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IReturn } from 'src/globalType';
+import * as fs from 'fs';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+
+function generateUniqueID(): string {
+  return uuidv4(); // Generate a UUID (version 4)
+}
+
 @Injectable()
 export class ResumeService {
   constructor(
-    @InjectRepository(Resume) private readonly resumeRepository: Repository<Resume>,
+    @InjectRepository(Resume)
+    private readonly resumeRepository: Repository<Resume>,
   ) {}
 
   async create(createResumeDto: CreateResumeDto): Promise<IReturn<Resume>> {
     try {
       const resume = new Resume();
       resume.status = createResumeDto.status;
-      resume.job = createResumeDto.job
+      resume.job = createResumeDto.job;
       resume.user = createResumeDto.user;
       const savedResume = await this.resumeRepository.save(resume);
       return {
         statusCode: 200,
         message: 'Resume created successfully',
         data: savedResume,
-      }; 
-    } catch (error) { 
+      };
+    } catch (error) {
       return {
         statusCode: 500,
         message: 'Internal server error',
@@ -35,10 +44,10 @@ export class ResumeService {
   async findAll(): Promise<IReturn<Resume[]>> {
     try {
       const resumes = await this.resumeRepository.find({
-        relations: ['user', 'job','job.company'],
+        relations: ['user', 'job', 'job.company'],
         order: {
-          id:"ASC"
-      }
+          id: 'ASC',
+        },
       });
       return {
         statusCode: 200,
@@ -58,20 +67,23 @@ export class ResumeService {
     try {
       const resume = await this.resumeRepository.findOne({
         where: { id },
-        relations: ['user', 'job','job.company'],
+        relations: ['user', 'job', 'job.company'],
       });
-      return resume
+      return resume;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
-  async update(id: number, updateResumeDto: UpdateResumeDto): Promise<IReturn<Resume>> {
+  async update(
+    id: number,
+    updateResumeDto: UpdateResumeDto,
+  ): Promise<IReturn<Resume>> {
     try {
       const existResume = await this.findOne(id);
       if (existResume) {
         existResume.job = updateResumeDto.job;
-        existResume.status = updateResumeDto.status
+        existResume.status = updateResumeDto.status;
         await this.resumeRepository.save(existResume);
         return {
           statusCode: 200,
@@ -117,12 +129,35 @@ export class ResumeService {
     }
   }
 
-  async uploadCVFile(id: number, cvFile:Express.Multer.File): Promise<IReturn<Resume>> {
+  async uploadCVFile(
+    id: number,
+    cvFile: Express.Multer.File,
+  ): Promise<IReturn<Resume>> {
     try {
       const existResume = await this.findOne(id);
       if (existResume) {
-        existResume.cvFile = cvFile
+        const uniqueID = generateUniqueID();
+        const extension = path.extname(cvFile.originalname);
+        const fileName = `${id}_${uniqueID}${extension}`;
+        const filePath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          'fontend',
+          'asset',
+          'resumes',
+          fileName,
+        );
+
+        // Save file with unique name
+        fs.writeFileSync(filePath, cvFile.buffer);
+
+        existResume.cvFile = fileName
+
         await this.resumeRepository.save(existResume);
+
         return {
           statusCode: 200,
           message: 'Resume updated successfully',

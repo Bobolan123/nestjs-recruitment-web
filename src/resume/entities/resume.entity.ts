@@ -18,8 +18,8 @@ export class Resume {
   @Column({ type: 'varchar', length: 30 })
   status: string;
 
-  @Column({ type: 'bytea', nullable: true }) 
-  cvFile: Express.Multer.File
+  @Column({ type: 'varchar', nullable: true }) 
+  cvFile: string
 
   @ManyToOne(() => User, (user) => user.resumes)
   user: User;

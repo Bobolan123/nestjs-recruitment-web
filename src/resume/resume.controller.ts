@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { ResumeService } from './resume.service';
 import { CreateResumeDto } from './dto/create-resume.dto';
 import { UpdateResumeDto } from './dto/update-resume.dto';
@@ -15,10 +25,13 @@ export class ResumeController {
 
   @Patch('uploadCVFile/:id')
   @UseInterceptors(FileInterceptor('cvFile'))
-  uploadCVFile(@Param('id') id: string,@UploadedFile() cvFile: Express.Multer.File) {
+  uploadCVFile( 
+    @Param('id') id: string,
+    @UploadedFile() cvFile: Express.Multer.File,
+  ) {
     return this.resumeService.uploadCVFile(+id, cvFile);
   }
-  
+
   @Get('read')
   findAll() {
     return this.resumeService.findAll();
@@ -38,6 +51,4 @@ export class ResumeController {
   remove(@Param('id') id: string) {
     return this.resumeService.remove(+id);
   }
-
-  
 }

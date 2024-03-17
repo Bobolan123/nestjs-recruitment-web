@@ -36,7 +36,7 @@ import { Skill } from './skills/entities/skill.entity';
       entities: [User, Role, Resume, Job, Skill, Company, Api],
       database: 'Recruitment',
       synchronize: true,
-      logging: true,
+      logging: false,
     }),
     UserModule,
     CompanyModule,

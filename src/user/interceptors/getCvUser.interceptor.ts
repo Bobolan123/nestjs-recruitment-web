@@ -16,6 +16,7 @@ import {
       name: string;
       status: string;
       date: Date; // Update type to Date
+      cvFile:string
     }[];
   }
   
@@ -36,6 +37,7 @@ import {
               company: resume.job.company.name,
               status: resume.status,
               date: resume.created_at,
+              cvFile:resume.cvFile
             };
           });
           newData.sort((a, b) => a.id - b.id);
