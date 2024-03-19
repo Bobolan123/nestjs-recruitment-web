@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors } from '@nestjs/common';
 import { ApiService } from './api.service';
 import { CreateApiDto } from './dto/create-api.dto';
 import { UpdateApiDto } from './dto/update-api.dto';
+import { GetApiForRole } from './interceptors/getApiForRole';
 
 @Controller('api')
 export class ApiController {
@@ -15,6 +16,12 @@ export class ApiController {
   @Get('read')
   findAll() {
     return this.apiService.findAll();
+  }
+
+  @UseInterceptors(GetApiForRole)
+  @Get('readForRole')
+  readForRole() {
+    return this.apiService.readForRole();
   }
 
   @Get('read/:id')

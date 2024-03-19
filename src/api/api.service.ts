@@ -55,6 +55,22 @@ export class ApiService {
     }
   }
 
+  async readForRole() {
+    try {
+      const apis = await this.apiRepository.find();
+      // Sort the apis array in ascending order by id
+      apis.sort((a, b) => a.id - b.id);
+
+      return apis
+    } catch (error) {
+      console.log(error);
+      return {
+        statusCode: 500,
+        message: 'Internal server error',
+        error: error.message,
+      };
+    }
+  }
   async findOne(id: number) {
     try {
       const api = await this.apiRepository.findOne({ where: { id } });

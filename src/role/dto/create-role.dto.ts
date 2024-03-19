@@ -1,11 +1,12 @@
-import { IsEnum, IsNotEmpty } from "class-validator"
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { Api } from 'src/api/entities/api.entity';
 
 export class CreateRoleDto {
-    @IsNotEmpty()
-    @IsEnum(['hr', 'user', 'admin'])
-    name:'hr' | 'user' | 'admin' 
+  @IsNotEmpty()
+  @IsEnum(['hr', 'user', 'admin'])
+  name: 'hr' | 'user' | 'admin';
 
-    description:string
+  description: string;
 
-    apiIds: number[]
+  apis: Api[];
 }
