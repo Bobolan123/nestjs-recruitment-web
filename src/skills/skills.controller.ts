@@ -17,6 +17,17 @@ export class SkillsController {
     return this.skillsService.findAll();
   }
 
+  
+  @Get('readByIds')
+  findByIds(@Body() ids:number[]) {
+    return this.skillsService.findByIds(ids);
+  }
+
+  @Post('getEmail')
+  getEmail(@Body() data:{email:string,ids:number[]}) {
+    return this.skillsService.getEmail(data);
+  }
+
   @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.skillsService.findOne(+id);

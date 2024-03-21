@@ -7,11 +7,13 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { IReturn } from 'src/globalType';
 import { IUpdattePassword } from './user.controller';
+import { MailerService } from '@nest-modules/mailer';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private mailerService: MailerService,
   ) {}
 
   async hashPassword(password): Promise<string> {
@@ -31,9 +33,19 @@ export class UserService {
         user.email = createUserDto.email;
         user.password = await this.hashPassword(createUserDto.password);
         user.gender = createUserDto.gender;
-        user.role = createUserDto.role;
+        user.role = createUserDto.role; 
         user.location = createUserDto.location;
+        await this.mailerService.sendMail({
+          to: createUserDto.email,
+          subject: 'Welcome to my website',
+          template: './welcome',  
+          context: {
+            name: createUserDto.name,
+          },
+        });
         const savedUser = await this.userRepository.save(user);
+
+        
         return {
           statusCode: 201,
           message: 'User created successfully',

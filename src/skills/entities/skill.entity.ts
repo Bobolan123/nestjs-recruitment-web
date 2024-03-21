@@ -1,5 +1,5 @@
 import { Job } from 'src/job/entities/job.entity';
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Skill {
@@ -11,6 +11,20 @@ export class Skill {
 
   @Column({ type: 'varchar' })
   name: string;
+
+  @ManyToMany(() => Job, job => job.skills)
+  @JoinTable({
+    name: "job_skill",
+    joinColumn: {
+      name: "skill_id",
+      referencedColumnName: "id"
+    },
+    inverseJoinColumn: {
+      name: "job_id",
+      referencedColumnName: "id"
+    }
+  })
+  jobs: Job[];
 
   @CreateDateColumn({
     type: 'timestamp',

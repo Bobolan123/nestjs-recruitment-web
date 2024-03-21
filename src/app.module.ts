@@ -17,13 +17,15 @@ import { Api } from './api/entities/api.entity';
 import { AuthModule } from './auth/auth.module';
 import { LocalStrategy } from './auth/strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from 'multer.config';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './error.interceptor';
 import { SkillsModule } from './skills/skills.module';
 import { Skill } from './skills/entities/skill.entity';
+import { join } from 'path';
+import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 
 @Module({
   imports: [
@@ -50,6 +52,32 @@ import { Skill } from './skills/entities/skill.entity';
     }),
     MulterModule.register(multerConfig),
     SkillsModule,
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        // transport: config.get('MAIL_TRANSPORT'),
+        transport: {
+          host: config.get('MAIL_HOST'),
+          secure: false,
+          auth: {
+            user: config.get('MAIL_USER'),
+            pass: config.get('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: `"No Reply" <${config.get('MAIL_FROM')}>`,
+        }, 
+        template: {
+          dir: join(__dirname, 'templates/email'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+        
+      }), 
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [
