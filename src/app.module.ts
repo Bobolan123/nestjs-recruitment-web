@@ -45,15 +45,20 @@ import { Skill } from './skills/entities/skill.entity';
     RoleModule,
     ApiModule,
     AuthModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, // no need to import into other modules
+    }),
     MulterModule.register(multerConfig),
     SkillsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LocalStrategy,
+  providers: [
+    AppService,
+    LocalStrategy,
     {
       provide: APP_FILTER,
       useClass: GlobalExceptionFilter,
-    },],
+    },
+  ],
 })
 export class AppModule {}

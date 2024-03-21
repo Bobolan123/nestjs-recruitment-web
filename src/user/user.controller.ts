@@ -13,6 +13,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCvUserInterceptor } from './interceptors/getCvUser.interceptor';
 
+export interface IUpdattePassword {
+  password:string
+  newPassword:string
+}
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -41,6 +45,11 @@ export class UserController {
   @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
+  }
+
+  @Patch('updatePassword/:id')
+  updatePassword(@Param('id') id: string, @Body() updateUserDto: IUpdattePassword) {
+    return this.userService.updatePassword(+id, updateUserDto);
   }
 
   @Delete('delete/:id')

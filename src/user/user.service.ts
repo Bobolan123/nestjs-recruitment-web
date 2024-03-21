@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { IReturn } from 'src/globalType';
+import { IUpdattePassword } from './user.controller';
 
 @Injectable()
 export class UserService {
@@ -175,6 +176,49 @@ export class UserService {
     }
   }
 
+  async updatePassword(
+    id: number,
+    updateUserDto: IUpdattePassword,
+  ): Promise<IReturn<User | {}>> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id },
+      });
+      if (!user) {
+        return {
+          statusCode: 404,
+          message: 'User not found',
+        };
+      }
+
+      const isCorrectPassword = await bcrypt.compare(
+        updateUserDto.password,
+        user.password,
+      );
+      if (isCorrectPassword) {
+        user.password = await this.hashPassword(updateUserDto.newPassword);
+
+        await this.userRepository.save(user);
+        return {
+          statusCode: 200,
+          message: 'Update password successfully',
+          data: user,
+        };
+      } else {
+        return {
+          statusCode: 401,
+          message: 'Password not correct',
+          data: {},
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: 'Internal server error',
+        error: error.message,
+      };
+    }
+  }
   async remove(id: number): Promise<IReturn<null>> {
     try {
       const userToRemove = await this.userRepository.findOne({
