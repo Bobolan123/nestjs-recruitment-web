@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SkillsService } from './skills.service';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
+import { SkipAuth } from 'src/auth/SkipAuth';
 
 @Controller('skills')
 export class SkillsController {
@@ -12,6 +13,7 @@ export class SkillsController {
     return this.skillsService.create(createSkillDto);
   }
 
+  @SkipAuth()
   @Get('read')
   findAll() {
     return this.skillsService.findAll();
@@ -28,6 +30,7 @@ export class SkillsController {
     return this.skillsService.getEmail(data);
   }
 
+  @SkipAuth()
   @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.skillsService.findOne(+id);

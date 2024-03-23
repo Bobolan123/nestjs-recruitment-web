@@ -15,7 +15,7 @@ export class Company {
   @Column({ type: 'varchar',nullable:true })
   description: string;
 
-  @Column({ type: 'bytea', nullable: true })
+  @Column({ type: 'varchar',nullable:true })
   logo: Buffer;
 
   @Column({ type: 'varchar',nullable:true })

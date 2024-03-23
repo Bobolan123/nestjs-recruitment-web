@@ -16,7 +16,6 @@ import { Company } from './company/entities/company.entity';
 import { Api } from './api/entities/api.entity';
 import { AuthModule } from './auth/auth.module';
 import { LocalStrategy } from './auth/strategies/local.strategy';
-import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from 'multer.config';
@@ -74,7 +73,6 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
             strict: true,
           },
         },
-        
       }), 
       inject: [ConfigService],
     }),

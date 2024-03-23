@@ -4,12 +4,20 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
-import { IReturn } from 'src/globalType'; // 
+import { IReturn } from 'src/globalType'; //
+import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
+import * as path from 'path';
+
+function generateUniqueID(): string {
+  return uuidv4(); // Generate a UUID (version 4)
+}
 
 @Injectable()
 export class CompanyService {
   constructor(
-    @InjectRepository(Company) private readonly companyRepository: Repository<Company>,
+    @InjectRepository(Company)
+    private readonly companyRepository: Repository<Company>,
   ) {}
 
   async create(createCompanyDto: CreateCompanyDto): Promise<IReturn<Company>> {
@@ -18,10 +26,29 @@ export class CompanyService {
       company.name = createCompanyDto.name;
       company.description = createCompanyDto.description;
       company.location = createCompanyDto.location;
+
       if (createCompanyDto.logo) {
         const logoBuffer = Buffer.from(createCompanyDto.logo.buffer);
-        company.logo = logoBuffer;
-        company.filename = createCompanyDto.filename;
+        // company.logo = logoBuffer;
+        const uniqueID = await generateUniqueID();
+        const extension = path.extname(createCompanyDto.filename);
+        const fileName = `${uniqueID}${extension}`;
+        const filePath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          'fontend',
+          'public',
+          'logos',
+          fileName,
+        );
+
+        // Save file with unique name
+        fs.writeFileSync(filePath, logoBuffer);
+        company.filename = fileName;
+
       }
       const savedCompany = await this.companyRepository.save(company);
       return {
@@ -69,7 +96,6 @@ export class CompanyService {
     });
   }
 
-
   async findTopCompany(): Promise<IReturn<Company[]>> {
     try {
       const allCompanies = await this.companyRepository.find();
@@ -102,7 +128,10 @@ export class CompanyService {
     }
   }
 
-  async update(id: number, updateCompanyDto: UpdateCompanyDto): Promise<IReturn<Company>> {
+  async update(
+    id: number,
+    updateCompanyDto: UpdateCompanyDto,
+  ): Promise<IReturn<Company>> {
     try {
       const company = await this.findOne(id);
       if (!company) {

@@ -17,6 +17,7 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import * as mimeTypes from 'mime-types'; // Import the 'mime-types' library
+import { SkipAuth } from 'src/auth/SkipAuth';
 
 @Controller('company')
 export class CompanyController {
@@ -24,25 +25,40 @@ export class CompanyController {
 
   @Post('create')
   @UseInterceptors(FileInterceptor('logo')) // 'logo' should match the property name in CreateCompanyDto
-  create(
-    @Body() createCompanyDto: CreateCompanyDto,
+  async create(
     @UploadedFile() logo: Express.Multer.File,
+    @Body('description') description: string,
+    @Body('name') name: string,
+    @Body('location') location: string,
   ) {
+    const createCompanyDto: CreateCompanyDto = {
+      description,
+      name,
+      location,
+      logo: logo, // Assign the logo file object
+      filename: logo.originalname, // Assign the filename
+    };
+
     const allowedImageTypes = ['png', 'jpg'];
-    if (allowedImageTypes.some((type) => logo.originalname.includes(type))) {
+    if (
+      logo &&
+      allowedImageTypes.some((type) => logo.originalname.includes(type))
+    ) {
       createCompanyDto.logo = logo; // Attach the logo file to the DTO
       createCompanyDto.filename = logo.originalname;
-      return this.companyService.create(createCompanyDto);
+      return await this.companyService.create(createCompanyDto);
     } else {
-      return {};
+      return {}; // Handle invalid file type or no file uploaded
     }
   }
 
+  @SkipAuth()
   @Get('readCompanies')
   findAll() {
     return this.companyService.findAll();
   }
 
+  @SkipAuth()
   @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.companyService.findOne(+id);

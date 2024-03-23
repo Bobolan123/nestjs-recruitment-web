@@ -12,6 +12,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCvUserInterceptor } from './interceptors/getCvUser.interceptor';
+import { SkipAuth } from 'src/auth/SkipAuth';
 
 export interface IUpdattePassword {
   password:string
@@ -21,6 +22,7 @@ export interface IUpdattePassword {
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @SkipAuth()
   @Post('create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
