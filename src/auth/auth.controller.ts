@@ -9,7 +9,6 @@ import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard.ts';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @SkipAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {

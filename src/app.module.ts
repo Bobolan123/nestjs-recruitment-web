@@ -19,12 +19,14 @@ import { LocalStrategy } from './auth/strategies/local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from 'multer.config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { GlobalExceptionFilter } from './error.interceptor';
 import { SkillsModule } from './skills/skills.module';
 import { Skill } from './skills/entities/skill.entity';
 import { join } from 'path';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
+import { RolesGuard } from './authorization/roles.guard';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -46,6 +48,7 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
     RoleModule,
     ApiModule,
     AuthModule,
+
     ConfigModule.forRoot({
       isGlobal: true, // no need to import into other modules
     }),
@@ -65,7 +68,7 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
         },
         defaults: {
           from: `"No Reply" <${config.get('MAIL_FROM')}>`,
-        }, 
+        },
         template: {
           dir: join(__dirname, 'templates/email'),
           adapter: new HandlebarsAdapter(),
@@ -73,7 +76,7 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
             strict: true,
           },
         },
-      }), 
+      }),
       inject: [ConfigService],
     }),
   ],
@@ -84,6 +87,14 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
     {
       provide: APP_FILTER,
       useClass: GlobalExceptionFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

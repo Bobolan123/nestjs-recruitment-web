@@ -125,6 +125,7 @@ export class UserService {
       console.log(error);
     }
   }
+  
   async findOneByEmail(email: string): Promise<IReturn<User | undefined>> {
     try {
       const user = await this.userRepository.findOne({
@@ -261,7 +262,7 @@ export class UserService {
     try {
       const user = await this.userRepository.findOne({
         where: { email },
-        relations: ['role'],
+        relations: ['role', 'role.apis'],
       });
       if (user) {
         return {

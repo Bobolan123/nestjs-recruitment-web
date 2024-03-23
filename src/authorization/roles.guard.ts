@@ -16,19 +16,19 @@ export class RolesGuard implements CanActivate {
 
     const user = request.user; // get from JWtAuthguard that is applied global in app module
     const endpoint: string = request.originalUrl;
-
     if (endpoint.includes('login')) {
-      return true
+
+      return true;
     }
-
-//     const userData = await this.userService.findOneUserWithRoles(user.email)
-//     const roles = userData.role;
-
-//     if (userData.group.name === 'admin') {
-//       return true
-//     }
-
-//     const checkRole = roles.some((role) => endpoint.includes(role.url));
-//     return checkRole;
+    
+    const userData = await this.userService.findOneUserWithRoles(user.email);
+    const role = userData.data.role;
+    // if (role.name === 'admin') {
+    //   return true;
+    // }
+    const apis = role.apis;
+    const checkRole = apis.some((api) => endpoint.includes(api.endpoint));
+    console.log(checkRole)
+    return checkRole;
   }
 }

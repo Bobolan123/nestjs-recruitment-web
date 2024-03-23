@@ -25,10 +25,6 @@ import { RefreshJwtStrategy } from './strategies/refreshToken.strategy';
     LocalStrategy,
     JwtService,
     JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
     RefreshJwtStrategy
   ],
   exports: [AuthService],
