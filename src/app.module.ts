@@ -27,6 +27,7 @@ import { join } from 'path';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { RolesGuard } from './authorization/roles.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -41,6 +42,10 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       synchronize: true,
       logging: false,
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
     UserModule,
     CompanyModule,
     JobModule,
@@ -96,6 +101,11 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+    
   ],
 })
 export class AppModule {}

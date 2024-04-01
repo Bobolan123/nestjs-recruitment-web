@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Api } from 'src/api/entities/api.entity';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
 @Injectable()
 export class RoleService {
   constructor(
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {
@@ -50,6 +53,38 @@ export class RoleService {
         message: 'Roles retrieved successfully',
         data: roles,
       };
+    } catch (error) {
+      console.log(error);
+      return {
+        statusCode: 500,
+        message: 'Internal server error',
+        error: error.message,
+      };
+    }
+  }
+
+  async getModule() {
+    const user: any = this.request.user;
+
+    try {
+      const roles = await this.roleRepository.find({
+        where: { name: user.role },
+        relations: {
+          apis: true,
+        },
+        order: {
+          id: 'ASC',
+        },
+      });
+      console.log(roles)
+      // Create an array of all module names
+      const allModules = roles.flatMap((role) =>
+        role.apis.map((api) => api.module),
+      );
+      // Remove duplicates
+      const uniqueModules = [...new Set(allModules)];
+
+      return uniqueModules;
     } catch (error) {
       console.log(error);
       return {

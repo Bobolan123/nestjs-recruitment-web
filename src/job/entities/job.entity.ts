@@ -51,7 +51,9 @@ export class Job {
   @OneToMany(() => Resume, (resume) => resume.job)
   resumes: Resume[];
 
-  @ManyToOne(() => Company, (company) => company.jobs)
+  @ManyToOne(() => Company, (company) => company.jobs,{
+    onDelete:"CASCADE"
+  })
   company: Company;
 
   @ManyToMany(() => Skill)

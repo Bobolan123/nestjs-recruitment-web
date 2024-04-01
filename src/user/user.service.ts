@@ -70,6 +70,9 @@ export class UserService {
     try {
       const users = await this.userRepository.find({
         relations: ['resumes', 'role'],
+        order: {
+          id: "ASC"
+        }
       });
       return {
         statusCode: 200,

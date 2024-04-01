@@ -1,7 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from './role.enum';
-import { ROLES_KEY } from './roles.decorator';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -16,19 +14,17 @@ export class RolesGuard implements CanActivate {
 
     const user = request.user; // get from JWtAuthguard that is applied global in app module
     const endpoint: string = request.originalUrl;
-    if (endpoint.includes('login')) {
-
-      return true;
-    }
+    if (endpoint.includes('login') || endpoint.includes('read')) {
+      return true; 
+    } 
     
     const userData = await this.userService.findOneUserWithRoles(user.email);
     const role = userData.data.role;
-    // if (role.name === 'admin') {
-    //   return true;
-    // }
+    if (role.name === 'admin') {
+      return true;
+    }
     const apis = role.apis;
     const checkRole = apis.some((api) => endpoint.includes(api.endpoint));
-    console.log(checkRole)
-    return checkRole;
+      return checkRole;
   }
 }

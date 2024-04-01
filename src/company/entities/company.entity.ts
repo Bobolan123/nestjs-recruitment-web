@@ -25,11 +25,14 @@ export class Company {
   filename: string;
 
 
-  @OneToMany(() => Job, job => job.company)
+  @OneToMany(() => Job, job => job.company, {
+    onDelete:'CASCADE',
+    // cascade:true
+  })
   jobs: Job[]
 
   @CreateDateColumn({
-    type: 'timestamp',
+    type: 'timestamp', 
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   public created_at: Date;

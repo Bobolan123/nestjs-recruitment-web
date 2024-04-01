@@ -13,13 +13,16 @@ export class RoleController {
     return this.roleService.create(createRoleDto);
   }
 
-  @SkipAuth()
   @Get('read')
   findAll() {
     return this.roleService.findAll();
   }
 
-  @SkipAuth()
+  @Get('getModule')
+  getModule() {
+    return this.roleService.getModule();
+  }
+
   @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.roleService.findOne(+id);

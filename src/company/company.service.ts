@@ -175,7 +175,9 @@ export class CompanyService {
           data: null,
         };
       }
-      await this.companyRepository.delete(id);
+      // company.jobs=[]
+      // await this.companyRepository.save(company)
+      const del = await this.companyRepository.delete(id);
       return {
         statusCode: 200,
         message: 'Company deleted successfully',
