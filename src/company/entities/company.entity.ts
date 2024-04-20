@@ -26,7 +26,7 @@ export class Company {
 
 
   @OneToMany(() => Job, job => job.company, {
-    onDelete:'CASCADE',
+    onDelete:'CASCADE', 
     // cascade:true
   })
   jobs: Job[]

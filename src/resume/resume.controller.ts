@@ -19,18 +19,25 @@ import { SkipAuth } from 'src/auth/SkipAuth';
 export class ResumeController {
   constructor(private readonly resumeService: ResumeService) {}
 
-  @Post('create')
-  create(@Body() createResumeDto: CreateResumeDto) {
-    return this.resumeService.create(createResumeDto);
-  }
-
-  @Patch('uploadCVFile/:id')
+  @Post('createCV')
   @UseInterceptors(FileInterceptor('cvFile'))
-  uploadCVFile( 
-    @Param('id') id: string,
+  createCV(
     @UploadedFile() cvFile: Express.Multer.File,
+    @Body()
+    dataInput: {
+      status: string;
+      user: string;
+      job: string;
+    },
   ) {
-    return this.resumeService.uploadCVFile(+id, cvFile);
+    // Convert user and job to numbers
+    const data = {
+      status: dataInput.status,
+      user: { id: +dataInput.user },
+      job: { id: +dataInput.job },
+    };
+
+    return this.resumeService.createCV(data, cvFile);
   }
 
   @SkipAuth()

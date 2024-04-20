@@ -20,19 +20,44 @@ export class ResumeService {
     private readonly resumeRepository: Repository<Resume>,
   ) {}
 
-  async create(createResumeDto: CreateResumeDto): Promise<IReturn<Resume>> {
+  async createCV(
+    createResumeDto: any,
+    cvFile: Express.Multer.File,
+  ): Promise<IReturn<Resume>> {
     try {
       const resume = new Resume();
       resume.status = createResumeDto.status;
       resume.job = createResumeDto.job;
       resume.user = createResumeDto.user;
+      const uniqueID = generateUniqueID();
+      const extension = path.extname(cvFile.originalname);
+      const fileName = `${uniqueID}${extension}`;
+      const filePath = path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'fontend',
+        'asset',
+        'resumes',
+        fileName,
+      );
+
+      // Save file with unique name
+      fs.writeFileSync(filePath, cvFile.buffer);
+
+      resume.cvFile = fileName;
+
       const savedResume = await this.resumeRepository.save(resume);
+
       return {
         statusCode: 200,
         message: 'Resume created successfully',
         data: savedResume,
       };
     } catch (error) {
+      console.log(error);
       return {
         statusCode: 500,
         message: 'Internal server error',
@@ -119,62 +144,13 @@ export class ResumeService {
         statusCode: 200,
         message: `Resume with ID ${id} removed successfully`,
         data: null,
-      };
+      }; 
     } catch (error) {
       return {
         statusCode: 500,
         message: 'Internal server error',
         error: error.message,
-      };
+      }; 
     }
-  }
-
-  async uploadCVFile(
-    id: number,
-    cvFile: Express.Multer.File,
-  ): Promise<IReturn<Resume>> {
-    try {
-      const existResume = await this.findOne(id);
-      if (existResume) {
-        const uniqueID = generateUniqueID();
-        const extension = path.extname(cvFile.originalname);
-        const fileName = `${id}_${uniqueID}${extension}`;
-        const filePath = path.join(
-          __dirname,
-          '..',
-          '..',
-          '..',
-          '..',
-          'fontend',
-          'asset',
-          'resumes',
-          fileName,
-        );
-
-        // Save file with unique name
-        fs.writeFileSync(filePath, cvFile.buffer);
-
-        existResume.cvFile = fileName
-
-        await this.resumeRepository.save(existResume);
-
-        return {
-          statusCode: 200,
-          message: 'Resume updated successfully',
-          data: existResume,
-        };
-      } else {
-        return {
-          statusCode: 404,
-          message: 'Resume not found',
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
-  }
+  }  
 }

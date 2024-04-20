@@ -48,7 +48,9 @@ export class Job {
   @Column({ type: 'varchar', nullable:true })
   endDate: string;
 
-  @OneToMany(() => Resume, (resume) => resume.job)
+  @OneToMany(() => Resume, (resume) => resume.job, {
+    onDelete:'SET NULL'
+  })
   resumes: Resume[];
 
   @ManyToOne(() => Company, (company) => company.jobs,{
@@ -56,7 +58,9 @@ export class Job {
   })
   company: Company;
 
-  @ManyToMany(() => Skill)
+  @ManyToMany(() => Skill, {
+    onDelete:'SET NULL'
+  })
   @JoinTable({
     name:"job_skill",
     joinColumn: {

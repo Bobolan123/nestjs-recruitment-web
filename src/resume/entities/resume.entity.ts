@@ -24,7 +24,9 @@ export class Resume {
   @ManyToOne(() => User, (user) => user.resumes)
   user: User;
 
-  @ManyToOne(() => Job, (job) => job.resumes)
+  @ManyToOne(() => Job, (job) => job.resumes,{
+    onDelete:'SET NULL'
+  })
   job: Job;
 
   @CreateDateColumn({
