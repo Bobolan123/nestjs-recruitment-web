@@ -55,7 +55,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     AuthModule,
 
     ConfigModule.forRoot({
-      isGlobal: true, // no need to import into other modules
+      isGlobal: true, 
     }),
     MulterModule.register(multerConfig),
     SkillsModule,

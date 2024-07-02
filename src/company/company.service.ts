@@ -37,11 +37,8 @@ export class CompanyService {
           __dirname,
           '..',
           '..',
-          '..',
-          '..',
-          'fontend',
           'public',
-          'logos',
+          'ava_company',
           fileName,
         );
 

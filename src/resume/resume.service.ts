@@ -36,10 +36,7 @@ export class ResumeService {
         __dirname,
         '..',
         '..',
-        '..',
-        '..',
-        'fontend',
-        'asset',
+        'public',
         'resumes',
         fileName,
       );
@@ -50,7 +47,6 @@ export class ResumeService {
       resume.cvFile = fileName;
 
       const savedResume = await this.resumeRepository.save(resume);
-
       return {
         statusCode: 200,
         message: 'Resume created successfully',
@@ -139,18 +135,35 @@ export class ResumeService {
           message: `Resume with ID ${id} not found`,
         };
       }
+      // Construct the file path from the file name stored in the resume
+      const filePath = path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'fontend',
+        'asset',
+        'resumes',
+        resumeToRemove.cvFile,
+      );
+
+      // Check if the file exists and delete it
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
       await this.resumeRepository.delete(id);
       return {
         statusCode: 200,
         message: `Resume with ID ${id} removed successfully`,
         data: null,
-      }; 
+      };
     } catch (error) {
       return {
         statusCode: 500,
         message: 'Internal server error',
         error: error.message,
-      }; 
+      };
     }
-  }  
+  }
 }
