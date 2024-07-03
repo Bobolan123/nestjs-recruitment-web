@@ -1,89 +1,93 @@
 import { Company } from 'src/company/entities/company.entity';
+import { PostingType } from 'src/posting_type/entities/posting_type.entity';
 import { Resume } from 'src/resume/entities/resume.entity';
 import { Skill } from 'src/skills/entities/skill.entity';
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class Job {
-  /**
-   * this decorator will help to auto generate id for the table.
-   */
-  @PrimaryGeneratedColumn()
-  id: number;
+    /**
+     * this decorator will help to auto generate id for the table.
+     */
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ type: 'varchar' })
-  name: string;
+    @Column({ type: 'varchar' })
+    name: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  location: string;
+    @Column({ type: 'varchar', nullable: true })
+    location: string;
 
-  @Column({ type: 'varchar', nullable: true })
-  level: string;
+    @Column({ type: 'varchar', nullable: true })
+    level: string;
 
-  @Column({ type: 'json', nullable: true })
-  description: string
+    @Column({ type: 'json', nullable: true })
+    description: string;
 
-  @Column({ type: 'integer', nullable: true })
-  count: number;
+    @Column({ type: 'integer', nullable: true })
+    count: number;
 
-  @Column({ nullable:true  })
-  status: Boolean;
+    @Column({ nullable: true })
+    status: Boolean;
 
-  @Column({ type: 'integer' })
-  salary: number;
+    @Column({ type: 'integer' })
+    salary: number;
 
-  @Column({ type: 'varchar',nullable:true  })
-  startDate: string;
+    @Column({ type: 'timestamptz' })
+    startDate: Date;
 
-  @Column({ type: 'varchar', nullable:true })
-  endDate: string;
+    @Column({ type: 'timestamptz' })
+    endDate: Date;
 
-  @OneToMany(() => Resume, (resume) => resume.job, {
-    onDelete:'SET NULL'
-  })
-  resumes: Resume[];
+    @OneToMany(() => Resume, (resume) => resume.job, {
+        onDelete: 'SET NULL',
+    })
+    resumes: Resume[];
 
-  @ManyToOne(() => Company, (company) => company.jobs,{
-    onDelete:"CASCADE"
-  })
-  company: Company;
+    @ManyToOne(() => Company, (company) => company.jobs, {
+        onDelete: 'CASCADE',
+    })
+    company: Company;
 
-  @ManyToMany(() => Skill, {
-    onDelete:'SET NULL'
-  })
-  @JoinTable({
-    name:"job_skill",
-    joinColumn: {
-      name: "job_id",
-      referencedColumnName: "id"
-  },
-  inverseJoinColumn: {
-      name: "skill_id",
-      referencedColumnName: "id"
-  }
-  })  
-  skills: Skill[] 
+    @ManyToOne(() => PostingType, (postingType) => postingType.jobs)
+    postingType: PostingType;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  public created_at: Date; 
+    @ManyToMany(() => Skill, {
+        onDelete: 'SET NULL',
+    })
+    @JoinTable({
+        name: 'job_skill',
+        joinColumn: {
+            name: 'job_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'skill_id',
+            referencedColumnName: 'id',
+        },
+    })
+    skills: Skill[];
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
-  public updated_at: Date;
+    @CreateDateColumn({
+        type: 'timestamp',
+        default: () => 'CURRENT_TIMESTAMP(6)',
+    })
+    public created_at: Date;
+
+    @UpdateDateColumn({
+        type: 'timestamp',
+        default: () => 'CURRENT_TIMESTAMP(6)',
+        onUpdate: 'CURRENT_TIMESTAMP(6)',
+    })
+    public updated_at: Date;
 }

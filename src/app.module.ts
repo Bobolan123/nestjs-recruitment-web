@@ -28,6 +28,11 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { RolesGuard } from './authorization/roles.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ReviewsModule } from './reviews/reviews.module';
+import { ReviewModule } from './review/review.module';
+import { PostingTypeModule } from './posting_type/posting_type.module';
+import { LocationModule } from './location/location.module';
+import { CoinTransactionModule } from './coin_transaction/coin_transaction.module';
 
 @Module({
   imports: [
@@ -84,6 +89,11 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       }),
       inject: [ConfigService],
     }),
+    ReviewsModule,
+    ReviewModule,
+    PostingTypeModule,
+    LocationModule,
+    CoinTransactionModule,
   ],
   controllers: [AppController],
   providers: [
