@@ -2,16 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
 import { IReturn } from 'src/globalType'; //
-import { v4 as uuidv4 } from 'uuid';
-import * as fs from 'fs';
-import * as path from 'path';
-
-function generateUniqueID(): string {
-  return uuidv4(); // Generate a UUID (version 4)
-}
 
 @Injectable()
 export class CompanyService {
@@ -20,71 +13,32 @@ export class CompanyService {
     private readonly companyRepository: Repository<Company>,
   ) {}
 
-  async create(createCompanyDto: CreateCompanyDto): Promise<IReturn<Company>> {
-    try {
-      const company = new Company();
-      company.name = createCompanyDto.name;
-      company.description = createCompanyDto.description;
-      company.location = createCompanyDto.location;
+  async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
+    const company = new Company();
+    company.name = createCompanyDto.name;
+    company.description = createCompanyDto.description;
+    company.location = createCompanyDto.location;
+    company.logo = createCompanyDto.logo;
 
-      if (createCompanyDto.logo) {
-        const logoBuffer = Buffer.from(createCompanyDto.logo.buffer);
-        // company.logo = logoBuffer;
-        const uniqueID = await generateUniqueID();
-        const extension = path.extname(createCompanyDto.filename);
-        const fileName = `${uniqueID}${extension}`;
-        const filePath = path.join(
-          __dirname,
-          '..',
-          '..',
-          'public',
-          'ava_company',
-          fileName,
-        );
+    await this.companyRepository.save(company);
 
-        // Save file with unique name
-        fs.writeFileSync(filePath, logoBuffer);
-        company.filename = fileName;
-
-      }
-      const savedCompany = await this.companyRepository.save(company);
-      return {
-        statusCode: 200,
-        message: 'Company created successfully',
-        data: savedCompany,
-      };
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    return company;
   }
 
-  async findAll(): Promise<IReturn<Company[]>> {
-    try {
-      const allCompanies = await this.companyRepository.find();
-      if (allCompanies && allCompanies.length > 0) {
-        return {
-          statusCode: 200,
-          message: 'Successfully retrieved all companies',
-          data: allCompanies,
-        };
-      } else {
-        return {
-          statusCode: 404,
-          message: 'No companies found',
-          data: null,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+  async findAll(curPage: number, limit: number = 10, qs) {
+    const offset = (curPage - 1) * limit;
+
+    const [result, total] = await this.companyRepository.findAndCount({
+      // where: { name: Like('%' + keyword + '%') }, order: { name: "DESC" },
+      take: limit,
+      skip: offset,
+    });
+
+    return {
+      companies: result,
+      totalCompanies: total,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: any): Promise<Company> {
@@ -93,99 +47,23 @@ export class CompanyService {
     });
   }
 
-  async findTopCompany(): Promise<IReturn<Company[]>> {
-    try {
-      const allCompanies = await this.companyRepository.find();
-      if (allCompanies && allCompanies.length > 3) {
-        const topCompanies = allCompanies.slice(0, 4);
-        return {
-          statusCode: 200,
-          message: 'Successfully retrieved top companies',
-          data: topCompanies,
-        };
-      } else if (allCompanies && allCompanies.length < 4) {
-        return {
-          statusCode: 200,
-          message: 'Successfully retrieved top companies',
-          data: allCompanies,
-        };
-      } else {
-        return {
-          statusCode: 404,
-          message: 'No companies found',
-          data: null,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
-  }
-
   async update(
     id: number,
     updateCompanyDto: UpdateCompanyDto,
-  ): Promise<IReturn<Company>> {
-    try {
-      const company = await this.findOne(id);
-      if (!company) {
-        return {
-          statusCode: 404,
-          message: 'Company not found',
-          data: null,
-        };
-      }
-      company.name = updateCompanyDto.name || company.name;
-      company.description = updateCompanyDto.description || company.description;
-      company.location = updateCompanyDto.location || company.location;
-      if (updateCompanyDto.logo) {
-        // Convert Express.Multer.File to Buffer
-        const logoBuffer = Buffer.from(updateCompanyDto.logo.buffer);
-        company.logo = logoBuffer;
-        company.filename = updateCompanyDto.filename;
-      }
-      await this.companyRepository.save(company);
-      return {
-        statusCode: 200,
-        message: 'Company updated successfully',
-        data: company,
-      };
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+  ): Promise<Company> {
+    const company = await this.findOne(id);
+
+    company.name = updateCompanyDto.name || company.name;
+    company.description = updateCompanyDto.description || company.description;
+    company.location = updateCompanyDto.location || company.location;
+    company.logo = updateCompanyDto.logo || company.logo;
+
+    await this.companyRepository.save(company);
+    return company;
   }
 
-  async remove(id: number): Promise<IReturn<Company>> {
-    try {
-      const company = await this.findOne(id);
-      if (!company) {
-        return {
-          statusCode: 404,
-          message: 'Company not found',
-          data: null,
-        };
-      }
-      // company.jobs=[]
-      // await this.companyRepository.save(company)
-      const del = await this.companyRepository.delete(id);
-      return {
-        statusCode: 200,
-        message: 'Company deleted successfully',
-        data: company,
-      };
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+  async remove(id: number) {
+    const del = await this.companyRepository.delete(id);
+    return del;
   }
 }

@@ -3,7 +3,7 @@ import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { DifferencesDateInterceptor } from 'src/company/interceptors/differencesDate.interceptor';
-import { SkipAuth } from 'src/auth/SkipAuth';
+import { Public } from 'src/auth/Public';
 
 @Controller('job')
 export class JobController {
@@ -14,14 +14,14 @@ export class JobController {
     return this.jobService.create(createJobDto);
   }
 
-  @SkipAuth()
+  @Public()
   @UseInterceptors(DifferencesDateInterceptor)
   @Get('readAllJob')
   findAll() {
     return this.jobService.findAll();
   }
 
-  @SkipAuth() 
+  @Public() 
   @Get('readJob/:id')
   findOne(@Param('id') id: string) {
     return this.jobService.findOne(+id);

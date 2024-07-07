@@ -28,11 +28,18 @@ import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
 import { RolesGuard } from './authorization/roles.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ReviewsModule } from './reviews/reviews.module';
 import { ReviewModule } from './review/review.module';
 import { PostingTypeModule } from './posting_type/posting_type.module';
 import { LocationModule } from './location/location.module';
 import { CoinTransactionModule } from './coin_transaction/coin_transaction.module';
+import { UserSkillLevelModule } from './user_skill_level/user_skill_level.module';
+import { CoinTransaction } from './coin_transaction/entities/coin_transaction.entity';
+import { UserSkillLevel } from './user_skill_level/entities/user_skill_level.entity';
+import { PostingType } from './posting_type/entities/posting_type.entity';
+import { Review } from './review/entities/review.entity';
+import { Location } from './location/entities/location.entity';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module';
 
 @Module({
   imports: [
@@ -42,15 +49,25 @@ import { CoinTransactionModule } from './coin_transaction/coin_transaction.modul
       port: 5432,
       password: 'andhungbui00',
       username: 'postgres',
-      entities: [User, Role, Resume, Job, Skill, Company, Api],
+      entities: [
+        User,
+        Role,
+        Resume,
+        Job,
+        Skill,
+        Company,
+        Api,
+        CoinTransaction,
+        UserSkillLevel,
+        PostingType,
+        Review,
+        Location,
+      ],
       database: 'Recruitment',
       synchronize: true,
       logging: false,
+      autoLoadEntities: true,
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 10,
-    }]),
     UserModule,
     CompanyModule,
     JobModule,
@@ -58,12 +75,19 @@ import { CoinTransactionModule } from './coin_transaction/coin_transaction.modul
     RoleModule,
     ApiModule,
     AuthModule,
+    ReviewModule,
+    PostingTypeModule,
+    LocationModule,
+    CoinTransactionModule,
+    UserSkillLevelModule,
+    FilesModule,
+    SkillsModule,
 
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
-    MulterModule.register(multerConfig),
-    SkillsModule,
+
+    // MulterModule.register(multerConfig),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({
@@ -89,11 +113,17 @@ import { CoinTransactionModule } from './coin_transaction/coin_transaction.modul
       }),
       inject: [ConfigService],
     }),
-    ReviewsModule,
-    ReviewModule,
-    PostingTypeModule,
-    LocationModule,
-    CoinTransactionModule,
+
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [
@@ -113,9 +143,8 @@ import { CoinTransactionModule } from './coin_transaction/coin_transaction.modul
     },
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
-    
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

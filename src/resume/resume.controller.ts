@@ -13,7 +13,7 @@ import { ResumeService } from './resume.service';
 import { CreateResumeDto } from './dto/create-resume.dto';
 import { UpdateResumeDto } from './dto/update-resume.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { SkipAuth } from 'src/auth/SkipAuth';
+import { Public } from 'src/auth/Public';
 
 @Controller('resume')
 export class ResumeController {
@@ -40,13 +40,13 @@ export class ResumeController {
     return this.resumeService.createCV(data, cvFile);
   }
 
-  @SkipAuth()
+  @Public()
   @Get('read')
   findAll() {
     return this.resumeService.findAll();
   }
 
-  @SkipAuth()
+  @Public()
   @Get('read/:id')
   findOne(@Param('id') id: string) {
     return this.resumeService.findOne(+id);

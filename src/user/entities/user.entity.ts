@@ -2,6 +2,7 @@ import { CoinTransaction } from 'src/coin_transaction/entities/coin_transaction.
 import { Resume } from 'src/resume/entities/resume.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { UserSkillLevel } from 'src/user_skill_level/entities/user_skill_level.entity';
 import {
     Column,
     CreateDateColumn,
@@ -53,6 +54,9 @@ export class User {
 
     @OneToMany(() => CoinTransaction, (coinTransaction) => coinTransaction.user)
     coinTransactions: CoinTransaction[];
+
+    @OneToMany(() => UserSkillLevel, (UserSkillLevel) => UserSkillLevel.user)
+    UserSkillLevels: UserSkillLevel[];
 
     @CreateDateColumn({
         type: 'timestamp',

@@ -20,7 +20,7 @@ export class CreateJobDto {
 
     level:string
 
-    startDate:string
+    startDate:Date
 
-    endDate:string
+    endDate:Date
 }

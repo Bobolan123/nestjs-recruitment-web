@@ -11,5 +11,5 @@ export class CreateCompanyDto {
 
   filename: string;
   
-  logo: Express.Multer.File;
+  logo: string;
 }

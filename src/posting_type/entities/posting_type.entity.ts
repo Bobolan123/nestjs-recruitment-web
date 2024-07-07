@@ -1,12 +1,14 @@
 import { Job } from 'src/job/entities/job.entity';
 import {
     Column,
+    Entity,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
+@Entity()
 export class PostingType {
     @PrimaryGeneratedColumn()
     id: number;

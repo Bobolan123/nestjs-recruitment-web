@@ -9,20 +9,21 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
+@Entity()
 export class Location {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'varchar'})
+    @Column({ type: 'varchar' })
     address: string;
 
-    @Column({ type: 'varchar'})
+    @Column({ type: 'varchar' })
     address1: string;
 
-    @Column({ type: 'varchar'})
+    @Column({ type: 'varchar' })
     address2: string;
 
-    @Column({ type: 'varchar'})
+    @Column({ type: 'varchar' })
     address3: string;
 
     @ManyToOne(() => Company, (company) => company.locations)

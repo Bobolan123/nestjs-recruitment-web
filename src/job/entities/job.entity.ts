@@ -43,10 +43,10 @@ export class Job {
     @Column({ type: 'integer' })
     salary: number;
 
-    @Column({ type: 'timestamptz' })
+    @Column({ type: 'timestamptz', nullable: true })
     startDate: Date;
 
-    @Column({ type: 'timestamptz' })
+    @Column({ type: 'timestamptz', nullable: true })
     endDate: Date;
 
     @OneToMany(() => Resume, (resume) => resume.job, {

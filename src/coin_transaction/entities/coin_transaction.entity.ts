@@ -3,10 +3,12 @@ import { User } from 'src/user/entities/user.entity';
 import {
     Column,
     CreateDateColumn,
+    Entity,
     ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
+@Entity()
 export class CoinTransaction {
     @PrimaryGeneratedColumn()
     id: number;
