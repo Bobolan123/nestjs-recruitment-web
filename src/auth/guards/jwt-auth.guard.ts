@@ -33,21 +33,24 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err, user, info, context: ExecutionContext) {
     // You can throw an exception based on either "info" or "err" arguments
     const request: Request = context.switchToHttp().getRequest();
-
     if (err || !user) {
       throw err || new UnauthorizedException('Unauthozied');
     }
     const targetMethod = request.method;
     const targetEnpoint = request.route?.path;
+    console.log(targetMethod, targetEnpoint);
+    const permissions = user.apis; //{api_method:string, api_endpoint: string} get from jwt strategy
+    console.log(permissions);
 
-    const permissions = user.permissions;
     const isExist = permissions.find(
       (permission) =>
-        permission.method === targetMethod &&
-        permission.endpoint === targetEnpoint,
+        permission.api_method === targetMethod.toLowerCase() &&
+        permission.api_endpoint === targetEnpoint,
     );
     if (!isExist) {
-      throw new ForbiddenException(`You aren't allowed to access this endpoint`)
+      throw new ForbiddenException(
+        `You aren't allowed to access this endpoint`,
+      );
     }
     return user;
   }

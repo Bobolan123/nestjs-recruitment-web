@@ -59,8 +59,8 @@ export class RoleService {
     return uniqueModules;
   }
 
-  async findOne(id: number) {
-    const roles = await this.roleRepository.findOne({
+  async findOne(id: number) {  
+    const role = await this.roleRepository.findOne({
       where: {
         users: { id: id },
       },
@@ -74,20 +74,20 @@ export class RoleService {
         },
       },
     });
-
-    return roles;
+  
+    return role;
   }
+  
 
   async update(id: number, updateRoleDto: UpdateRoleDto) {
     const existRole = await this.findOne(id);
-    console.log(existRole);
     if (existRole) {
       const apis = updateRoleDto.apis;
       existRole.apis = apis;
       const updatedRole = await this.roleRepository.save(existRole);
       return updatedRole;
     } else {
-      return existRole; // Return the existing response structure
+      return existRole; 
     }
   }
 

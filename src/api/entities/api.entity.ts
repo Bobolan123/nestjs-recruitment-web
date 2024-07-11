@@ -22,18 +22,4 @@ export class Api {
   @Column({ type: 'enum', enum: ['get', 'post', 'patch', 'delete'], nullable: true })
   method: string;
   
-  
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-  })
-  public created_at: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
-    onUpdate: 'CURRENT_TIMESTAMP(6)',
-  })
-  public updated_at: Date;
 }

@@ -16,6 +16,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
+  //Format global response 
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformResInterceptor(reflector));
 

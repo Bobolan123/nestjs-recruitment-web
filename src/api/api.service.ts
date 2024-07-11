@@ -12,140 +12,63 @@ export class ApiService {
   ) {}
 
   async create(createApiDto: CreateApiDto) {
-    try {
-      const api = new Api();
-      api.endpoint = createApiDto.endpoint;
-      api.description = createApiDto.description;
-      api.method = createApiDto.method;
-      api.module = createApiDto.module;
-      const savedApi = await this.apiRepository.save(api);
-      return {
-        statusCode: 201,
-        message: 'Api created successfully',
-        data: savedApi,
-      };
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    const api = new Api();
+    api.endpoint = createApiDto.endpoint;
+    api.description = createApiDto.description;
+    api.method = createApiDto.method;
+    api.module = createApiDto.module;
+    const savedApi = await this.apiRepository.save(api);
+    savedApi;
+    return savedApi
   }
 
   async findAll() {
-    try {
-      const apis = await this.apiRepository.find();
-      // Sort the apis array in ascending order by id
-      apis.sort((a, b) => a.id - b.id);
+    const apis = await this.apiRepository.find();
+    // Sort the apis array in ascending order by id
+    apis.sort((a, b) => a.id - b.id);
 
-      return {
-        statusCode: 200,
-        message: 'Apis retrieved successfully',
-        data: apis,
-      };
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    return apis;
   }
 
   async readForRole() {
-    try {
-      const apis = await this.apiRepository.find();
-      // Sort the apis array in ascending order by id
-      apis.sort((a, b) => a.id - b.id);
+    const apis = await this.apiRepository.find();
+    // Sort the apis array in ascending order by id
+    apis.sort((a, b) => a.id - b.id);
 
-      return apis
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    return apis;
   }
+
   async findOne(id: number) {
-    try {
-      const api = await this.apiRepository.findOne({ where: { id } });
-      if (api) {
-        return {
-          statusCode: 200,
-          message: 'Api found',
-          data: api,
-        };
-      } else {
-        return {
-          statusCode: 404,
-          message: 'Api not found',
-        };
-      }
-    } catch (error) {
-      console.log(error);
+    const api = await this.apiRepository.findOne({ where: { id } });
+    if (api) {
+      return api;
+    } else {
       return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
+        statusCode: 404,
+        message: 'Api not found',
       };
     }
   }
 
   async update(id: number, updateApiDto: UpdateApiDto) {
-    try {
-      const existApi = await this.apiRepository.findOne({
-        where: { id },
-      });
-      if (existApi instanceof Api) {
-        existApi.endpoint = updateApiDto.endpoint;
-        existApi.description = updateApiDto.description;
-        existApi.method = updateApiDto.method;
-        existApi.module = updateApiDto.module;
-        const updatedApi = await this.apiRepository.save(existApi);
-        return {
-          statusCode: 200,
-          message: 'Api updated successfully',
-          data: updatedApi,
-        };
-      } else {
-        return existApi; // It may return either 404 or 500 response
-      }
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    const existApi = await this.apiRepository.findOne({
+      where: { id },
+    });
+    existApi.endpoint = updateApiDto.endpoint || existApi.endpoint;
+    existApi.description = updateApiDto.description || existApi.description;
+    existApi.method = updateApiDto.method || existApi.method;
+    existApi.module = updateApiDto.module || existApi.module;
+    const updatedApi = await this.apiRepository.save(existApi);
+    return updatedApi;
   }
 
   async remove(id: number) {
-    try {
       const deleteResult = await this.apiRepository.delete(id);
-      if (deleteResult.affected === 1) {
-        return {
-          statusCode: 200,
-          message: `Api with ID ${id} removed successfully`,
-        };
+      if (deleteResult) {
+        return {}
       } else {
-        return {
-          statusCode: 404,
-          message: `Api with ID ${id} not found`,
-        };
+        return "Error"
       }
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+   
   }
 }
