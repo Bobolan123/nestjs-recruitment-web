@@ -8,6 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
+import { RoleModule } from 'src/role/role.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -16,14 +19,15 @@ import { ConfigService } from '@nestjs/config';
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => {
         return {
-          secret: config.get<string>('JWT_SECRET_KEY'),
+          secret: config.get<string>('JWT_ACCESS_TOKEN'),
           signOptions: {
-            expiresIn: config.get<string | number>('JWT_EXPIRATION_TIME'),
+            expiresIn: config.get<string | number>('JWT_ACCESS_EXPIRATION'),
           },
         };
       },
       inject: [ConfigService],
     }),
+    RoleModule,
   ],
   providers: [
     AuthService,

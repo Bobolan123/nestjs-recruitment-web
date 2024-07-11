@@ -13,7 +13,6 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request as ReqExpress, Response } from 'express';
 import { Public } from './Public';
 import { ResponseMessage } from 'src/decorator/responseMessage.decorator';
-import { UserDecorator } from 'src/decorator/user.decorator';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
@@ -30,7 +29,8 @@ export class AuthController {
     async register(@Body() createUserDto: CreateUserDto) {
         return this.authService.register(createUserDto);
     }
-
+    
+    @Public()
     @UseGuards(LocalAuthGuard)
     @ResponseMessage('User Login')
     @Post('login')

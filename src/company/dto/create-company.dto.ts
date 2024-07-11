@@ -3,6 +3,7 @@ import { IsNotEmpty } from 'class-validator';
 import { Express } from 'express';
 
 export class CreateCompanyDto {
+  @IsNotEmpty()
   name: string;
 
   description: string;
@@ -11,5 +12,6 @@ export class CreateCompanyDto {
 
   filename: string;
   
+  @IsNotEmpty()
   logo: string;
 }

@@ -5,7 +5,6 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { IReturn } from 'src/globalType';
 import { IUpdattePassword } from './user.controller';
 import { MailerService } from '@nest-modules/mailer';
 
@@ -166,7 +165,9 @@ export class UserService {
     async findOneUserWithRoles(email: string): Promise<User> {
         const user = await this.userRepository.findOne({
             where: { email },
-            relations: ['role', 'role.apis'],
+            relations: {
+                role:true
+            },
         });
         return user;
     }

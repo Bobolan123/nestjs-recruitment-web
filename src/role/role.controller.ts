@@ -1,40 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Public } from 'src/auth/Public';
+import { ResponseMessage } from 'src/decorator/responseMessage.decorator';
 
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
-  @Post('create')
+  @Post()
+  @ResponseMessage('Create new role')
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
   }
 
-  @Get('read')
+  @Get()
+  @ResponseMessage('Get roles')
   findAll() {
     return this.roleService.findAll();
   }
 
-  @Get('getModule')
+  @Get('module')
+  @ResponseMessage('Get API permission')
   getModule() {
     return this.roleService.getModule();
   }
 
-  @Get('read/:id')
-  findOne(@Param('id') id: string) {
+  @Get(':id')
+  @ResponseMessage('Get role by id')
+  findOne(@Param('id') id: string) {  
     return this.roleService.findOne(+id);
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
+  @ResponseMessage('Update role')
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(+id, updateRoleDto);
   }
 
-  @Delete('delete/:id')
+  @Delete(':id')
+  @ResponseMessage('Delete role')
   remove(@Param('id') id: string) {
     return this.roleService.remove(+id);
   }
+
 }

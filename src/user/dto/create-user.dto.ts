@@ -13,6 +13,7 @@ import { Role } from 'src/role/entities/role.entity';
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{1,20}$/;
   
   export class CreateUserDto {
+    @IsNotEmpty()
     @IsString()
     @MinLength(2, { message: 'Name must have atleast 2 characters.' })
     @IsNotEmpty()

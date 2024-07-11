@@ -1,8 +1,14 @@
-import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from '../Public';
+import { Request } from 'express';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -10,7 +16,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -19,27 +27,28 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (isPublic) {
       return true;
     }
-
-    const request = context.switchToHttp().getRequest();
-    const endpoint: string = request.originalUrl;
-    if (endpoint.includes('login') || endpoint.includes('read')) {
-      return true;
-    }
-    const token = this.extractJwtFromHeader(request);
-    request.user = token; // You can attach the token to the request object if needed
     return super.canActivate(context);
   }
 
-  private extractJwtFromHeader(request: any): string | null {
-    if (!request.headers.authorization) {
-      throw new UnauthorizedException('Authorization header is missing');
+  handleRequest(err, user, info, context: ExecutionContext) {
+    // You can throw an exception based on either "info" or "err" arguments
+    const request: Request = context.switchToHttp().getRequest();
+
+    if (err || !user) {
+      throw err || new UnauthorizedException('Unauthozied');
     }
-    const authHeader = request.headers.authorization;
-    const parts = authHeader.split(' ');
-    if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      throw new UnauthorizedException('Invalid authorization header format');
+    const targetMethod = request.method;
+    const targetEnpoint = request.route?.path;
+
+    const permissions = user.permissions;
+    const isExist = permissions.find(
+      (permission) =>
+        permission.method === targetMethod &&
+        permission.endpoint === targetEnpoint,
+    );
+    if (!isExist) {
+      throw new ForbiddenException(`You aren't allowed to access this endpoint`)
     }
-    const token = parts[1];
-    return token;
+    return user;
   }
 }

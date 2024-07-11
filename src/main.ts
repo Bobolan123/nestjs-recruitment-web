@@ -9,23 +9,23 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    "origin": "*",
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-    "preflightContinue": false,
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
   });
 
   app.use(cookieParser());
 
-  const reflector = app.get(Reflector)
+  const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformResInterceptor(reflector));
-  
+
   //config versioning
   app.setGlobalPrefix('api');
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: ['1', '2'],
   });
-  
+
   const config = new DocumentBuilder()
     .setTitle('Nestjs recruitment website')
     .setDescription('The Nest API description')

@@ -4,7 +4,6 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
-import { IReturn } from 'src/globalType'; //
 
 @Injectable()
 export class CompanyService {
@@ -25,13 +24,16 @@ export class CompanyService {
     return company;
   }
 
-  async findAll(curPage: number, limit: number = 10, qs) {
+  async findAll(curPage: number, limit: number = 10, qs?) {
     const offset = (curPage - 1) * limit;
 
     const [result, total] = await this.companyRepository.findAndCount({
       // where: { name: Like('%' + keyword + '%') }, order: { name: "DESC" },
       take: limit,
       skip: offset,
+      order: {
+        created_at: 'ASC',
+      },
     });
 
     return {
@@ -44,6 +46,16 @@ export class CompanyService {
   async findOne(id: any): Promise<Company> {
     return this.companyRepository.findOne({
       where: { id },
+      relations: {
+        skills: true,
+      },
+      select: {
+        created_at:false,
+        description:false,
+        // skills: {
+        //   name: true,
+        // },
+      },
     });
   }
 
@@ -64,6 +76,6 @@ export class CompanyService {
 
   async remove(id: number) {
     const del = await this.companyRepository.delete(id);
-    return del;
+    return {};
   }
 }

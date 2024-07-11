@@ -17,15 +17,12 @@ import { Api } from './api/entities/api.entity';
 import { AuthModule } from './auth/auth.module';
 import { LocalStrategy } from './auth/strategies/local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MulterModule } from '@nestjs/platform-express';
-import { multerConfig } from 'multer.config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { GlobalExceptionFilter } from './error.interceptor';
 import { SkillsModule } from './skills/skills.module';
 import { Skill } from './skills/entities/skill.entity';
 import { join } from 'path';
 import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
-import { RolesGuard } from './authorization/roles.guard';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ReviewModule } from './review/review.module';
@@ -136,10 +133,6 @@ import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
     },
     {
       provide: APP_GUARD,

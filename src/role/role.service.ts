@@ -16,163 +16,95 @@ export class RoleService {
   ) {}
 
   async create(createRoleDto: CreateRoleDto) {
-    try {
-      const role: Role = new Role();
-      role.description = createRoleDto.description;
-      role.name = createRoleDto.name;
-      role.apis = createRoleDto.apis;
-      const savedRole = await this.roleRepository.save(role);
-      return {
-        statusCode: 201,
-        message: 'Role created successfully',
-        data: savedRole,
-      };
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    const role: Role = new Role();
+    role.description = createRoleDto.description;
+    role.name = createRoleDto.name;
+    role.apis = createRoleDto.apis;
+    const savedRole = await this.roleRepository.save(role);
+    return savedRole;
   }
 
   async findAll() {
-    try {
-      const roles = await this.roleRepository.find({
-        relations: {
-          apis: true,
-          users: true,
-        },
-        order: {
-          id: 'ASC',
-        },
-      });
-      return {
-        statusCode: 200,
-        message: 'Roles retrieved successfully',
-        data: roles,
-      };
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    const roles = await this.roleRepository.find({
+      relations: {
+        apis: true,
+        users: true,
+      },
+      order: {
+        id: 'ASC',
+      },
+    });
+    return roles;
   }
 
   async getModule() {
     const user: any = this.request.user;
 
-    try {
-      const roles = await this.roleRepository.find({
-        where: { name: user.role },
-        relations: {
-          apis: true,
-        },
-        order: {
-          id: 'ASC',
-        },
-      });
-      console.log(roles)
-      // Create an array of all module names
-      const allModules = roles.flatMap((role) =>
-        role.apis.map((api) => api.module),
-      );
-      // Remove duplicates
-      const uniqueModules = [...new Set(allModules)];
+    const roles = await this.roleRepository.find({
+      where: { name: user.role },
+      relations: {
+        apis: true,
+      },
+      order: {
+        id: 'ASC',
+      },
+    });
+    // Create an array of all module names
+    const allModules = roles.flatMap((role) =>
+      role.apis.map((api) => api.module),
+    );
+    // Remove duplicates
+    const uniqueModules = [...new Set(allModules)];
 
-      return uniqueModules;
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    return uniqueModules;
   }
 
   async findOne(id: number) {
-    try {
-      const role = await this.roleRepository.findOne({
-        where: { id },
-        relations: {
-          apis: true,
-          users: true,
+    const roles = await this.roleRepository.findOne({
+      where: {
+        users: { id: id },
+      },
+      relations: {
+        apis: true,
+      },
+      select: {
+        apis: {
+          endpoint: true,
+          method: true,
         },
-      });
-      if (role) {
-        return {
-          statusCode: 200,
-          message: 'Role found',
-          data: role,
-        };
-      } else {
-        return {
-          statusCode: 404,
-          message: 'Role not found',
-        };
-      }
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+      },
+    });
+
+    return roles;
   }
 
   async update(id: number, updateRoleDto: UpdateRoleDto) {
-    try {
-      const existRole = await this.findOne(id);
-
-      if (existRole.statusCode === 200) {
-        const apis = updateRoleDto.apis;
-        existRole.data.apis = apis;
-        const updatedRole = await this.roleRepository.save(existRole.data);
-        return {
-          statusCode: 200,
-          message: 'Role updated successfully',
-          data: updatedRole,
-        };
-      } else {
-        return existRole; // Return the existing response structure
-      }
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
+    const existRole = await this.findOne(id);
+    console.log(existRole);
+    if (existRole) {
+      const apis = updateRoleDto.apis;
+      existRole.apis = apis;
+      const updatedRole = await this.roleRepository.save(existRole);
+      return updatedRole;
+    } else {
+      return existRole; // Return the existing response structure
     }
   }
 
   async remove(id: number) {
-    try {
-      const deleteResult = await this.roleRepository.delete(id);
-      if (deleteResult.affected === 1) {
-        return {
-          statusCode: 200,
-          message: `Role with ID ${id} removed successfully`,
-        };
-      } else {
-        return {
-          statusCode: 404,
-          message: `Role with ID ${id} not found`,
-        };
-      }
-    } catch (error) {
-      console.log(error);
-      return {
-        statusCode: 500,
-        message: 'Internal server error',
-        error: error.message,
-      };
-    }
+    const deleteResult = await this.roleRepository.delete(id);
+    return {};
+  }
+
+  async getApis(userId: number) {
+    const roles = await this.roleRepository.find({
+      where: {
+        users: { id: userId },
+      },
+      loadRelationIds: {
+        relations: ['apis'],
+      },
+    });
+    return roles;
   }
 }
