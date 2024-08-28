@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, BadRequestException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
@@ -37,29 +37,7 @@ export class RoleService {
     return roles;
   }
 
-  async getModule() {
-    const user: any = this.request.user;
-
-    const roles = await this.roleRepository.find({
-      where: { name: user.role },
-      relations: {
-        apis: true,
-      },
-      order: {
-        id: 'ASC',
-      },
-    });
-    // Create an array of all module names
-    const allModules = roles.flatMap((role) =>
-      role.apis.map((api) => api.module),
-    );
-    // Remove duplicates
-    const uniqueModules = [...new Set(allModules)];
-
-    return uniqueModules;
-  }
-
-  async findOne(id: number) {  
+  async findOne(id: number) {
     const role = await this.roleRepository.findOne({
       where: {
         users: { id: id },
@@ -74,26 +52,35 @@ export class RoleService {
         },
       },
     });
-  
+
     return role;
   }
-  
 
   async update(id: number, updateRoleDto: UpdateRoleDto) {
     const existRole = await this.findOne(id);
     if (existRole) {
-      const apis = updateRoleDto.apis;
-      existRole.apis = apis;
+      existRole.apis = existRole.apis.concat(updateRoleDto.apis);
+
+      const isExist = await this.roleRepository.findOne({
+        where: { name: updateRoleDto.name },
+      });
+      if (isExist) {
+        throw new BadRequestException(`Name ${isExist.name} already exists`);
+      }
+      existRole.name = updateRoleDto.name;
       const updatedRole = await this.roleRepository.save(existRole);
       return updatedRole;
     } else {
-      return existRole; 
+      throw new BadRequestException('Not found role');
     }
   }
 
   async remove(id: number) {
-    const deleteResult = await this.roleRepository.delete(id);
-    return {};
+    return await this.roleRepository
+      .createQueryBuilder()
+      .softDelete()
+      .where('id = :id', { id })
+      .execute();
   }
 
   async getApis(userId: number) {

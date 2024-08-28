@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { IUpdattePassword } from './user.controller';
 import { MailerService } from '@nest-modules/mailer';
+import * as dayjs from 'dayjs';
+import { AuthVerifiedOtp } from 'src/auth/dto/auth.dto';
 
 @Injectable()
 export class UserService {
@@ -16,6 +18,9 @@ export class UserService {
     private mailerService: MailerService,
   ) {}
 
+  generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000);
+  }
   async hashPassword(password): Promise<string> {
     const saltOrRounds = 8;
     const hash = await bcrypt.hash(password, saltOrRounds);
@@ -30,35 +35,71 @@ export class UserService {
     return existUser;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     const existUser = await this.userRepository.findOne({
       where: { email: createUserDto.email },
       relations: { role: true },
     });
-    if (!existUser) {
+
+    if (existUser) {
       throw new BadRequestException(`The email ${existUser.email} exists`);
     }
     const user: User = new User();
-    user.name = createUserDto.name;
-    user.age = createUserDto.age;
-    user.email = createUserDto.email;
-    user.password = await this.hashPassword(createUserDto.password);
-    user.gender = createUserDto.gender;
-    user.role = createUserDto.role;
-    user.location = createUserDto.location;
+
+    user.name = createUserDto?.name;
+    user.age = createUserDto?.age;
+    user.email = createUserDto?.email;
+    user.password = await this.hashPassword(createUserDto?.password);
+    user.gender = createUserDto?.gender;
+    user.role = createUserDto?.role;
+    user.location = createUserDto?.location;
+    user.otp = this.generateOTP();
+    user.isActive = false;
+    // Set otpExpired to 2 minutes from now
+    user.otpExpired = dayjs().add(10, 'minutes').toDate();
+
+    const savedUser = await this.userRepository.save(user);
     await this.mailerService.sendMail({
       to: createUserDto.email,
       subject: 'Welcome to my website',
-      template: './welcome',
+      template: './otpVerified',
       context: {
         name: createUserDto.name,
+        otp: user?.otp,
       },
     });
-    const savedUser = await this.userRepository.save(user);
 
-    return savedUser;
+    return {
+      id: user.id,
+      email: user.email,
+    };
   }
 
+  async verifyOtp(authVerifiedOtp: AuthVerifiedOtp) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: authVerifiedOtp.id,
+        otp: authVerifiedOtp.otp,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException('The OTP is not valid or expired');
+    }
+
+    const isExpired = dayjs().isBefore(user.otpExpired);
+    if (!isExpired) {
+      await await this.userRepository
+        .createQueryBuilder()
+        .update(User)
+        .set({ isActive: true })
+        .where('id = :id', { id: authVerifiedOtp.id })
+        .execute();
+      return { isExpired };
+    } else {
+      throw new BadRequestException('The OTP is not valid or expired');
+    }
+  }
   async findAll(): Promise<User[]> {
     const users = await this.userRepository.find({
       relations: ['resumes', 'role'],
@@ -152,19 +193,20 @@ export class UserService {
 
   async getRoleApis(userId: number) {
     try {
-        const apis = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoin('user.role', 'role')
-            .leftJoin('role.apis', 'api')
-            .select(['api.method', 'api.endpoint'])
-            .where('user.id = :userId', { userId })
-            .getRawMany(); // Use getRawMany to fetch raw data for the APIs
-
-        return apis;
+      const apis = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoin('user.role', 'role')
+        .leftJoin('role.apis', 'api')
+        .select([
+          'api.method AS method',
+          'api.endpoint  AS endpoint',
+          'api.module  AS module',
+        ])
+        .where('user.id = :userId', { userId })
+        .getRawMany(); // Use getRawMany to fetch raw data for the APIs
+      return apis;
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-}
-
-
+  }
 }

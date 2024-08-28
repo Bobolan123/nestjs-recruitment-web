@@ -15,6 +15,7 @@ import { Public } from './Public';
 import { ResponseMessage } from 'src/decorator/responseMessage.decorator';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { AuthVerifiedOtp } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,6 +32,13 @@ export class AuthController {
     }
     
     @Public()
+    @ResponseMessage('User Register')
+    @Post('verifyOtp')
+    async verifyOtp(@Body() authVerifiedOtp: AuthVerifiedOtp) {
+        return this.authService.verifyOtp(authVerifiedOtp);
+    }
+    
+    @Public()
     @UseGuards(LocalAuthGuard)
     @ResponseMessage('User Login')
     @Post('login')
@@ -38,7 +46,6 @@ export class AuthController {
         return this.authService.login(req.user, res);
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;

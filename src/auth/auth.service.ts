@@ -6,6 +6,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { AuthVerifiedOtp } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +26,11 @@ export class AuthService {
     return null;
   }
 
+  async verifyOtp(authVerifiedOtp: AuthVerifiedOtp) {
+    await this.usersService.verifyOtp(authVerifiedOtp);
+   
+  }
+
   async register(user: CreateUserDto) {
     const isExist = await this.usersService.create(user);
     if (!isExist) {
@@ -38,7 +44,7 @@ export class AuthService {
       name: user.name,
       email: user.email,
       id: user.id,
-      role: user.role.name,
+      role: user.role,
     };
 
     const refresh_token = this.jwtService.sign(payload, {
@@ -91,6 +97,7 @@ export class AuthService {
 
   logout(res: Response) {
     res.clearCookie('refresh_token');
+    res.clearCookie('access_token');
     return 'ok';
   }
 }

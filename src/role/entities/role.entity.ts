@@ -1,6 +1,15 @@
 import { Api } from 'src/api/entities/api.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Role {
@@ -10,28 +19,32 @@ export class Role {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 30 })
+  @Column({
+    type: 'enum',
+    enum: ['admin', 'user', 'hr'],
+    default: 'user',
+  })
   name: string;
 
-  @Column({ type: 'varchar'})
+  @Column({ type: 'varchar' })
   description: string;
 
-  @OneToMany(() => User, user => user.role)
-  users
+  @OneToMany(() => User, (user) => user.role)
+  users;
 
   @ManyToMany(() => Api)
   @JoinTable({
-    name:"role_api",
+    name: 'role_api',
     joinColumn: {
-      name: "role_id",
-      referencedColumnName: "id"
-  },
-  inverseJoinColumn: {
-      name: "api_id",
-      referencedColumnName: "id"
-  }
-  })  
-  apis: Api[] 
+      name: 'role_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'api_id',
+      referencedColumnName: 'id',
+    },
+  })
+  apis: Api[];
 
   @CreateDateColumn({
     type: 'timestamp',

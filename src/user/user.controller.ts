@@ -13,6 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetCvUserInterceptor } from './interceptors/getCvUser.interceptor';
 import { Public } from 'src/auth/Public';
+import { ResponseMessage } from 'src/decorator/responseMessage.decorator';
 
 export interface IUpdattePassword {
   password:string
@@ -23,27 +24,28 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('create')
+  @ResponseMessage('Create new User')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @Get('read')
+  @Get('')
   findAll() {
     return this.userService.findAll();
   }
 
   @UseInterceptors(GetCvUserInterceptor)
-  @Get('read/cv/:id')
+  @Get('cv/:id')
   findProfileCv(@Param('id') id: string) {
     return this.userService.findProfileCv(+id);
   }
 
-  @Get('read/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
@@ -53,7 +55,7 @@ export class UserController {
     return this.userService.updatePassword(+id, updateUserDto);
   }
 
-  @Delete('delete/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }

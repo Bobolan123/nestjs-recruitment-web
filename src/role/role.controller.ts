@@ -28,15 +28,9 @@ export class RoleController {
     return this.roleService.findAll();
   }
 
-  @Get('module')
-  @ResponseMessage('Get API permission')
-  getModule() {
-    return this.roleService.getModule();
-  }
-
   @Get(':id')
   @ResponseMessage('Get role by id')
-  findOne(@Param('id') id: string) {  
+  findOne(@Param('id') id: string) {
     return this.roleService.findOne(+id);
   }
 
@@ -51,5 +45,4 @@ export class RoleController {
   remove(@Param('id') id: string) {
     return this.roleService.remove(+id);
   }
-
 }

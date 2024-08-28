@@ -38,15 +38,14 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
     const targetMethod = request.method;
     const targetEnpoint = request.route?.path;
-    console.log(targetMethod, targetEnpoint);
-    const permissions = user.apis; //{api_method:string, api_endpoint: string} get from jwt strategy
-    console.log(permissions);
+    const permissions = user.apis; //{method:string, endpoint: string} get from jwt strategy
 
     const isExist = permissions.find(
       (permission) =>
-        permission.api_method === targetMethod.toLowerCase() &&
-        permission.api_endpoint === targetEnpoint,
+        permission.method === targetMethod.toLowerCase() &&
+        permission.endpoint === targetEnpoint,
     );
+    return user;
     if (!isExist) {
       throw new ForbiddenException(
         `You aren't allowed to access this endpoint`,
