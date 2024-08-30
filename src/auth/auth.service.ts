@@ -6,7 +6,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
-import { AuthVerifiedOtp } from './dto/auth.dto';
+import { AuthChangePassword, AuthVerifiedOtp } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,16 +26,25 @@ export class AuthService {
     return null;
   }
 
-  async verifyOtp(authVerifiedOtp: AuthVerifiedOtp) {
-    const res = await this.usersService.verifyOtp(authVerifiedOtp);
+  async verifyOtp(data: AuthVerifiedOtp) {
+    const res = await this.usersService.verifyOtp(data);
     return res;
   }
 
-  async resendOtp(authVerifiedOtp: AuthVerifiedOtp) {
-    const res = await this.usersService.resendOtp(authVerifiedOtp);
+  async resendOtp(data: AuthVerifiedOtp) {
+    const res = await this.usersService.resendOtp(data);
     return res;
   }
 
+  async forgotPassword(email: string) {
+    const res = await this.usersService.forgotPassword(email);
+    return res;
+  }
+
+  async changePassword(data: AuthChangePassword) {
+    const res = await this.usersService.changePassword(data);
+    return res;
+  }
 
   async register(user: CreateUserDto) {
     const res = await this.usersService.create(user);

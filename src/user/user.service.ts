@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { IUpdattePassword } from './user.controller';
 import { MailerService } from '@nest-modules/mailer';
 import * as dayjs from 'dayjs';
-import { AuthVerifiedOtp } from 'src/auth/dto/auth.dto';
+import { AuthChangePassword, AuthVerifiedOtp } from 'src/auth/dto/auth.dto';
 
 @Injectable()
 export class UserService {
@@ -86,14 +86,14 @@ export class UserService {
     };
   }
 
-  async verifyOtp(authVerifiedOtp: AuthVerifiedOtp) {
+  async verifyOtp(data: AuthVerifiedOtp) {
     const user = await this.userRepository.findOne({
       where: {
-        id: authVerifiedOtp.id,
-        otp: authVerifiedOtp.otp,
+        id: data.id,
+        otp: data.otp,
       },
     });
-    if (!user || +user?.otp !== +authVerifiedOtp.otp) {
+    if (!user || +user?.otp !== +data.otp) {
       throw new BadRequestException('The OTP is not valid or expired');
     }
 
@@ -103,7 +103,7 @@ export class UserService {
         .createQueryBuilder()
         .update(User)
         .set({ isActive: true })
-        .where('id = :id', { id: authVerifiedOtp.id })
+        .where('id = :id', { id: data.id })
         .execute();
       return { isExpired };
     } else {
@@ -111,13 +111,15 @@ export class UserService {
     }
   }
 
-  async resendOtp(authVerifiedOtp: AuthVerifiedOtp) {
+  async resendOtp(data: AuthVerifiedOtp) {
     const user = await this.userRepository.findOne({
       where: {
-        email: authVerifiedOtp.email,
+        email: data.email,
       },
     });
-
+    if (!user) {
+      throw new BadRequestException('Invalid user');
+    }
     //Generate new otp and time expiration
     user.otp = this.generateOTP();
     user.otpExpired = dayjs().add(10, 'minutes').toDate();
@@ -140,6 +142,71 @@ export class UserService {
       id: user.id,
       email: user.email,
     };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid user');
+    }
+    //Generate new otp and time expiration
+    user.otp = this.generateOTP();
+    user.otpExpired = dayjs().add(10, 'minutes').toDate();
+    const savedUser = await this.userRepository.save(user);
+
+    console.log(savedUser)
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: 'OTP to change password',
+      template: './otpVerified',
+      context: {
+        subject: 'OTP to change password',
+        name: user?.name,
+        otp: user?.otp,
+        message:
+          'We noticed you requested a new OTP to change password. Please use the following activation OTP:',
+      },
+    });
+
+    return {
+      id: user.id,
+      email: user.email,
+    };
+  }
+
+  async changePassword(data: AuthChangePassword) {
+    if (data.password !== data.confirmPassword) {
+      throw new BadRequestException('Password/Confirm password are not match');
+    }
+
+    const user = await this.userRepository.findOne({
+      where: {
+        email: data.email,
+      },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid user');
+    }
+
+    const isExpired = dayjs().isBefore(user.otpExpired);
+    if (!isExpired) {
+      await await this.userRepository
+        .createQueryBuilder()
+        .update(User)
+        .set({ password: await this.hashPassword(data.password) })
+        .where('id = :id', { id: user.id })
+        .execute();
+      return {
+        id: user.id,
+        email: user.email,
+      };
+    } else {
+      throw new BadRequestException('The OTP is not valid or expired');
+    }
   }
 
   async findAll(): Promise<User[]> {

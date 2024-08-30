@@ -45,3 +45,15 @@ export class AuthVerifiedOtp {
   @IsEmail()
   email?: string;
 }
+
+export class AuthChangePassword {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNotEmpty()
+  password: string;
+
+  @IsNotEmpty()
+  confirmPassword: string;
+}

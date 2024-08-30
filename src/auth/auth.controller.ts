@@ -9,13 +9,13 @@ import {
 } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request as ReqExpress, Response } from 'express';
 import { Public } from './Public';
 import { ResponseMessage } from 'src/decorator/responseMessage.decorator';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { AuthVerifiedOtp } from './dto/auth.dto';
+import { AuthChangePassword, AuthVerifiedOtp } from './dto/auth.dto';
+import { Logger } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -34,17 +34,29 @@ export class AuthController {
   @Public()
   @ResponseMessage('Verify OTP vie email')
   @Post('verifyOtp')
-  async resendOtp(@Body() authVerifiedOtp: AuthVerifiedOtp) {
-    return this.authService.verifyOtp(authVerifiedOtp);
+  async resendOtp(@Body() data: AuthVerifiedOtp) {
+    return this.authService.verifyOtp(data);
   }
-
-  
 
   @Public()
   @ResponseMessage('Resend OTP')
   @Post('resendOtp')
-  async verifyOtp(@Body() authVerifiedOtp: AuthVerifiedOtp) {
-    return this.authService.resendOtp(authVerifiedOtp);
+  async verifyOtp(@Body() data: AuthVerifiedOtp) {
+    return this.authService.resendOtp(data);
+  }
+
+  @Public()
+  @ResponseMessage('Send OTP to change password')
+  @Post('forgotPassword')
+  async forgotPassword(@Body("email") email: string) {
+    return this.authService.forgotPassword(email);
+  }
+
+  @Public()
+  @ResponseMessage('Change password')
+  @Post('changePassword') 
+  async changePassword(@Body() data: AuthChangePassword) {
+    return this.authService.changePassword(data);
   }
 
   @Public()
