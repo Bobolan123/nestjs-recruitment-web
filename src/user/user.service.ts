@@ -35,6 +35,14 @@ export class UserService {
     return existUser;
   }
 
+  async isActiveGmail(email: string) {
+    const existUser = await this.userRepository.findOne({
+      where: { email },
+      relations: { role: true },
+    });
+    return existUser.isActive;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const existUser = await this.userRepository.findOne({
       where: { email: createUserDto.email },
@@ -57,15 +65,18 @@ export class UserService {
     user.isActive = false;
     // Set otpExpired to 2 minutes from now
     user.otpExpired = dayjs().add(10, 'minutes').toDate();
-
     const savedUser = await this.userRepository.save(user);
+
     await this.mailerService.sendMail({
       to: createUserDto.email,
       subject: 'Welcome to my website',
       template: './otpVerified',
       context: {
+        subject: 'Welcome to ITJob',
         name: createUserDto.name,
         otp: user?.otp,
+        message:
+          'Thank you for registering with ITJob. To activate your account, please use the following activation OTP:',
       },
     });
 
@@ -82,8 +93,7 @@ export class UserService {
         otp: authVerifiedOtp.otp,
       },
     });
-
-    if (!user) {
+    if (!user || +user?.otp !== +authVerifiedOtp.otp) {
       throw new BadRequestException('The OTP is not valid or expired');
     }
 
@@ -100,9 +110,40 @@ export class UserService {
       throw new BadRequestException('The OTP is not valid or expired');
     }
   }
+
+  async resendOtp(authVerifiedOtp: AuthVerifiedOtp) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: authVerifiedOtp.email,
+      },
+    });
+
+    //Generate new otp and time expiration
+    user.otp = this.generateOTP();
+    user.otpExpired = dayjs().add(10, 'minutes').toDate();
+    const savedUser = await this.userRepository.save(user);
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Resend OTP',
+      template: './otpVerified',
+      context: {
+        subject: 'Resend OTP',
+        name: user.name,
+        otp: user?.otp,
+        message:
+          'We noticed you requested a new OTP. Please use the following activation OTP:',
+      },
+    });
+
+    return {
+      id: user.id,
+      email: user.email,
+    };
+  }
+
   async findAll(): Promise<User[]> {
     const users = await this.userRepository.find({
-      relations: ['resumes', 'role'],
       order: {
         id: 'ASC',
       },

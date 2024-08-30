@@ -1,7 +1,6 @@
 <html>
-
   <head>
-    <title>Hỏi Dân IT Activation Email</title>
+    <title>{{subject}}</title>
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
   </head>
@@ -14,23 +13,21 @@
         <h1
           style='font-size: 24px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 15px; text-align: center;'
         >
-          Welcome to ITJob</h1>
+          {{subject}}
+        </h1>
       </div>
       <div style='padding: 24px; background-color: #ffffff;'>
         <p style='margin-top: 0; margin-bottom: 24px;'>Hello {{name}},</p>
-        <p style='margin-top: 0; margin-bottom: 24px;'>Thank you for registering
-          with ITJob. To activate your account, please use the following
-          activation OTP:</p>
+        <p style='margin-top: 0; margin-bottom: 24px;'>{{message}}</p>
         <h2
-          style='font-size: 20px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 15px; text-align: center;'
+          style='font-size: 50px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 15px; text-align: center;'
         >
           {{otp}}</h2>
         <p style='margin-top: 0; margin-bottom: 24px;'>Please enter this OTP on
           the activation page within the next 2 minutes.</p>
         <p style='margin-top: 0; margin-bottom: 24px;'>If you did not register
-          for a account, please ignore this email.</p>
+          for an account, please ignore this email.</p>
       </div>
     </div>
   </body>
-
 </html>

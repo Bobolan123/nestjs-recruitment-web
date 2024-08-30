@@ -40,8 +40,8 @@ export class AuthVerifiedOtp {
   id: number;
 
   @IsNotEmpty()
-  otpExpired: Date;
-
-  @IsNotEmpty()
   otp: number;
+
+  @IsEmail()
+  email?: string;
 }

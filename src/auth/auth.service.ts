@@ -27,17 +27,29 @@ export class AuthService {
   }
 
   async verifyOtp(authVerifiedOtp: AuthVerifiedOtp) {
-    await this.usersService.verifyOtp(authVerifiedOtp);
-   
+    const res = await this.usersService.verifyOtp(authVerifiedOtp);
+    return res;
   }
 
+  async resendOtp(authVerifiedOtp: AuthVerifiedOtp) {
+    const res = await this.usersService.resendOtp(authVerifiedOtp);
+    return res;
+  }
+
+
   async register(user: CreateUserDto) {
-    const isExist = await this.usersService.create(user);
-    if (!isExist) {
+    const res = await this.usersService.create(user);
+    if (!res) {
       throw new BadRequestException(`The ${user.email} exists`);
     }
+    return res;
   }
   async login(user: User, response: Response) {
+    const isActiveGmail = await this.usersService.isActiveGmail(user.email);
+    if (isActiveGmail !== true) {
+      throw new BadRequestException('Email is not verified');
+    }
+
     const payload = {
       sub: 'token login',
       iss: 'from server',
