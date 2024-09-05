@@ -151,14 +151,13 @@ export class UserService {
       },
     });
     if (!user) {
-      throw new BadRequestException('Invalid user');
+      throw new BadRequestException('User does not exist');
     }
     //Generate new otp and time expiration
     user.otp = this.generateOTP();
     user.otpExpired = dayjs().add(10, 'minutes').toDate();
     const savedUser = await this.userRepository.save(user);
 
-    console.log(savedUser)
     await this.mailerService.sendMail({
       to: user.email,
       subject: 'OTP to change password',

@@ -28,12 +28,12 @@ export class Company {
     @Column({ type: 'varchar', nullable: true })
     logo: string;
 
-    @Column({ type: 'varchar', nullable: true })
-    location: string;
 
-    @Column({ type: 'int', nullable: true} )
-    @Min(0, { message: 'coin must be positive number' })
-    coin_balance: number;
+    @Column({ type: 'varchar', nullable: true })
+    country: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    company_type: string;
 
     @OneToMany(() => Job, (job) => job.company, {
         onDelete: 'CASCADE',

@@ -8,13 +8,13 @@ import { Public } from 'src/auth/Public';
 export class SkillsController {
   constructor(private readonly skillsService: SkillsService) {}
 
-  @Post('create')
+  @Post('')
   create(@Body() createSkillDto: CreateSkillDto) {
     return this.skillsService.create(createSkillDto);
   }
 
   @Public()
-  @Get('read')
+  @Get('')
   findAll() {
     return this.skillsService.findAll();
   }
@@ -31,17 +31,17 @@ export class SkillsController {
   }
 
   @Public()
-  @Get('read/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.skillsService.findOne(+id);
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() updateSkillDto: UpdateSkillDto) {
     return this.skillsService.update(+id, updateSkillDto);
   }
 
-  @Delete('delete/:id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.skillsService.remove(+id);
   }

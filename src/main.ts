@@ -16,7 +16,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  //Format global response 
+  //Format global response
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformResInterceptor(reflector));
 
@@ -31,7 +31,7 @@ async function bootstrap() {
     .setTitle('Nestjs recruitment website')
     .setDescription('The Nest API description')
     .setVersion('1.0')
-    .addTag('cats')
+    .addTag('JB')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

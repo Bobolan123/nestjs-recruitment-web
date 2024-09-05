@@ -45,6 +45,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         permission.method === targetMethod.toLowerCase() &&
         permission.endpoint === targetEnpoint,
     );
+    
     return user;
     if (!isExist) {
       throw new ForbiddenException(

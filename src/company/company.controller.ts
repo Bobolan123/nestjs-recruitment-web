@@ -32,9 +32,10 @@ export class CompanyController {
   findAll(
     @Query('page') curPage: string,
     @Query('limit') limit: string,
-    @Query() qs: string,
-    @UserDecorator() user:IUser
+    @Query() qs: any,
+    @UserDecorator() user: IUser,
   ) {
+    
     return this.companyService.findAll(+curPage, +limit, qs);
   }
 

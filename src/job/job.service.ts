@@ -28,11 +28,12 @@ export class JobService {
     return savedJob;
   }
 
-  async findAll(curPage: number, limit: number = 10, qs?) {
+  async findAll(curPage: number, limit: number = 10, qs?: any) {
     const offset = (curPage - 1) * limit;
 
     const [result, total] = await this.jobRepository.findAndCount({
       // where: { name: Like('%' + keyword + '%') }, order: { name: "DESC" },
+      order: { name: qs?.sort },
       take: limit,
       skip: offset,
       relations: ['company', 'skills', 'resumes'],

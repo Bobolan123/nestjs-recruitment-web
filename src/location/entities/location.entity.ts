@@ -1,31 +1,25 @@
 import { Company } from 'src/company/entities/company.entity';
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class Location {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'varchar' })
-    address: string;
+  @Column({ type: 'varchar' })
+  address: string;
 
-    @Column({ type: 'varchar' })
-    address1: string;
+  @Column({ type: 'varchar' })
+  address_city: string;
 
-    @Column({ type: 'varchar' })
-    address2: string;
-
-    @Column({ type: 'varchar' })
-    address3: string;
-
-    @ManyToOne(() => Company, (company) => company.locations)
-    company: Company;
+  @ManyToOne(() => Company, (company) => company.locations)
+  company: Company;
 }

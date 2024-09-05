@@ -10,6 +10,8 @@ import {
   ParseFilePipeBuilder,
   UseInterceptors,
   HttpStatus,
+  Res,
+  StreamableFile,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
@@ -17,6 +19,8 @@ import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/Public';
 import { ResponseMessage } from 'src/decorator/responseMessage.decorator';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Controller('files')
 export class FilesController {
@@ -30,7 +34,7 @@ export class FilesController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: '.(png|jpeg|jpg)',
+          fileType: '.(png|jpeg|jpg|pdf)',
         })
         .addMaxSizeValidator({
           maxSize: 2 * 1024 * 1024, //2mb,
@@ -42,6 +46,15 @@ export class FilesController {
     file: Express.Multer.File,
   ) {
     return file.filename;
+  }
+
+
+  @Get()
+  getFile(@Res() res: Response) {
+    console.log(join(process.cwd(), 'package.json'))
+    const file = createReadStream(join(process.cwd(), 'package.json'));
+    console.log(file)
+    return new StreamableFile(file);
   }
 
   @Get()

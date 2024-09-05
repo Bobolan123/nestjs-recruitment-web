@@ -40,30 +40,34 @@ import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      password: 'andhungbui00',
-      username: 'postgres',
-      entities: [
-        User,
-        Role,
-        Resume,
-        Job,
-        Skill,
-        Company,
-        Api,
-        CoinTransaction,
-        UserSkillLevel,
-        PostingType,
-        Review,
-        Location,
-      ],
-      database: 'Recruitment',
-      synchronize: true,
-      logging: false,
-      autoLoadEntities: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        host: config.get('HOST_DB'),
+        port: config.get<number>('PORT_DB'),
+        password: config.get('PASSWORD_DB'),
+        username: config.get('USERNAME_DB'),
+        entities: [
+          User,
+          Role,
+          Resume,
+          Job,
+          Skill,
+          Company,
+          Api,
+          CoinTransaction,
+          UserSkillLevel,
+          PostingType,
+          Review,
+          Location,
+        ],
+        database: 'Recruitment',
+        synchronize: true,
+        logging: false,
+        autoLoadEntities: true,
+      }),
     }),
     UserModule,
     CompanyModule,
@@ -110,8 +114,9 @@ import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module
       }),
       inject: [ConfigService],
     }),
-
-    ServeStaticModule.forRoot({
+ 
+    //Public sources
+    ServeStaticModule.forRoot({ 
       rootPath: join(__dirname, '..', 'public'),
     }),
 
@@ -126,18 +131,18 @@ import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module
   providers: [
     AppService,
     LocalStrategy,
-    {
-      provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: GlobalExceptionFilter,
+    // },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
 })
 export class AppModule {}

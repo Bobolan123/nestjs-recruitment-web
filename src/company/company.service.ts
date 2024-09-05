@@ -16,8 +16,8 @@ export class CompanyService {
     const company = new Company();
     company.name = createCompanyDto.name;
     company.description = createCompanyDto.description;
-    company.location = createCompanyDto.location;
     company.logo = createCompanyDto.logo;
+    company.skills = createCompanyDto.skills;
 
     await this.companyRepository.save(company);
 
@@ -28,11 +28,15 @@ export class CompanyService {
     const offset = (curPage - 1) * limit;
 
     const [result, total] = await this.companyRepository.findAndCount({
-      // where: { name: Like('%' + keyword + '%') }, order: { name: "DESC" },
+      // where: [{ name: Like(`%${qsObject?.name}%`) }, { id: +qsObject?.id  }],
       take: limit,
       skip: offset,
+      relations: ['skills', 'jobs', 'locations'],
+      // select: {
+      //   skills: { name: true },
+      // },
       order: {
-        created_at: 'ASC',
+        // created_at: 'ASC',
       },
     });
 
@@ -50,8 +54,8 @@ export class CompanyService {
         skills: true,
       },
       select: {
-        created_at:false,
-        description:false,
+        created_at: false,
+        description: false,
         // skills: {
         //   name: true,
         // },
@@ -67,8 +71,8 @@ export class CompanyService {
 
     company.name = updateCompanyDto.name || company.name;
     company.description = updateCompanyDto.description || company.description;
-    company.location = updateCompanyDto.location || company.location;
     company.logo = updateCompanyDto.logo || company.logo;
+    company.skills = updateCompanyDto.skills;
 
     await this.companyRepository.save(company);
     return company;
@@ -76,6 +80,6 @@ export class CompanyService {
 
   async remove(id: number) {
     const del = await this.companyRepository.delete(id);
-    return {};
+    return del;
   }
 }

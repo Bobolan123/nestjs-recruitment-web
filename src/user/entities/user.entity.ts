@@ -1,3 +1,4 @@
+import { Min } from 'class-validator';
 import { CoinTransaction } from 'src/coin_transaction/entities/coin_transaction.entity';
 import { Resume } from 'src/resume/entities/resume.entity';
 import { Review } from 'src/review/entities/review.entity';
@@ -51,6 +52,10 @@ export class User {
    * f - female
    */
   gender: string;
+
+  @Column({ type: 'int', nullable: true} )
+  @Min(0, { message: 'coin must be positive number' })
+  coin_balance: number;
 
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
