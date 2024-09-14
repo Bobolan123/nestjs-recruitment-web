@@ -28,15 +28,16 @@ export class CompanyService {
     const offset = (curPage - 1) * limit;
 
     const [result, total] = await this.companyRepository.findAndCount({
-      // where: [{ name: Like(`%${qsObject?.name}%`) }, { id: +qsObject?.id  }],
+      where: {
+        locations: {
+          city: qs.city,
+        },
+      },
       take: limit,
       skip: offset,
       relations: ['skills', 'jobs', 'locations'],
-      // select: {
-      //   skills: { name: true },
-      // },
       order: {
-        // created_at: 'ASC',
+        created_at: qs.sort,
       },
     });
 
@@ -52,6 +53,8 @@ export class CompanyService {
       where: { id },
       relations: {
         skills: true,
+        // jobs: true,
+        // locations: true,
       },
       select: {
         created_at: false,
@@ -61,6 +64,19 @@ export class CompanyService {
         // },
       },
     });
+  }
+
+  async findCompanySpotlight(): Promise<Company> {
+    const query = await this.companyRepository
+      .createQueryBuilder('company')
+      // .leftJoinAndSelect('company.skills', 'skills')
+      .leftJoinAndSelect('company.jobs', 'jobs')
+      .leftJoinAndSelect('company.locations', 'locations')
+      .select()
+      .orderBy('RANDOM()')
+      .getOne();
+
+    return query;
   }
 
   async update(

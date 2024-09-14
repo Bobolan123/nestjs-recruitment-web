@@ -33,7 +33,7 @@ export class JobService {
 
     const [result, total] = await this.jobRepository.findAndCount({
       // where: { name: Like('%' + keyword + '%') }, order: { name: "DESC" },
-      order: { name: qs?.sort },
+      order: { created_at: qs?.sort },
       take: limit,
       skip: offset,
       relations: ['company', 'skills', 'resumes'],
@@ -77,6 +77,8 @@ export class JobService {
       },
     });
   }
+
+  
 
   async update(id: number, updateJobDto: UpdateJobDto): Promise<Job> {
     const existingJob = await this.findOne(id);

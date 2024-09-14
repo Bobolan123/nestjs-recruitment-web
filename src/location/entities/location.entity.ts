@@ -18,7 +18,7 @@ export class Location {
   address: string;
 
   @Column({ type: 'varchar' })
-  address_city: string;
+  city: string;
 
   @ManyToOne(() => Company, (company) => company.locations)
   company: Company;

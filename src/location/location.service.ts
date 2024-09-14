@@ -16,7 +16,7 @@ export class LocationService {
     const location = new Location();
 
     location.address = createLocationDto.address;
-    location.address_city = createLocationDto.address_city;
+    location.city = createLocationDto.city;
 
     location.company = createLocationDto.company; // @IsNotEmpty() validation should ensure this is filled
 
@@ -38,7 +38,7 @@ export class LocationService {
 
     if (location) {
       location.address = updateLocationDto.address;
-      location.address_city = updateLocationDto.address_city;
+      location.city = updateLocationDto.city;
 
       location.company = updateLocationDto.company; // @IsNotEmpty() validation should ensure this is filled
 

@@ -20,7 +20,7 @@ var Location = /** @class */ (function () {
     ], Location.prototype, "address");
     __decorate([
         typeorm_1.Column({ type: 'varchar' })
-    ], Location.prototype, "address_city");
+    ], Location.prototype, "city");
     __decorate([
         typeorm_1.ManyToOne(function () { return company_entity_1.Company; }, function (company) { return company.locations; })
     ], Location.prototype, "company");

@@ -81,15 +81,16 @@ var CompanyService = /** @class */ (function () {
                     case 0:
                         offset = (curPage - 1) * limit;
                         return [4 /*yield*/, this.companyRepository.findAndCount({
-                                // where: [{ name: Like(`%${qsObject?.name}%`) }, { id: +qsObject?.id  }],
+                                where: {
+                                    locations: {
+                                        city: qs.city
+                                    }
+                                },
                                 take: limit,
                                 skip: offset,
                                 relations: ['skills', 'jobs', 'locations'],
-                                // select: {
-                                //   skills: { name: true },
-                                // },
                                 order: {
-                                // created_at: 'ASC',
+                                    created_at: qs.sort
                                 }
                             })];
                     case 1:
@@ -116,6 +117,26 @@ var CompanyService = /** @class */ (function () {
                             description: false
                         }
                     })];
+            });
+        });
+    };
+    CompanyService.prototype.findCompanySpotlight = function () {
+        return __awaiter(this, void 0, Promise, function () {
+            var query;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.companyRepository
+                            .createQueryBuilder('company')
+                            // .leftJoinAndSelect('company.skills', 'skills')
+                            .leftJoinAndSelect('company.jobs', 'jobs')
+                            .leftJoinAndSelect('company.locations', 'locations')
+                            .select()
+                            .orderBy('RANDOM()')
+                            .getOne()];
+                    case 1:
+                        query = _a.sent();
+                        return [2 /*return*/, query];
+                }
             });
         });
     };

@@ -89,7 +89,7 @@ var JobService = /** @class */ (function () {
                         offset = (curPage - 1) * limit;
                         return [4 /*yield*/, this.jobRepository.findAndCount({
                                 // where: { name: Like('%' + keyword + '%') }, order: { name: "DESC" },
-                                order: { name: qs === null || qs === void 0 ? void 0 : qs.sort },
+                                order: { created_at: qs === null || qs === void 0 ? void 0 : qs.sort },
                                 take: limit,
                                 skip: offset,
                                 relations: ['company', 'skills', 'resumes'],

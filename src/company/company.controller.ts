@@ -40,6 +40,13 @@ export class CompanyController {
   }
 
   @Public()
+  @ResponseMessage('Fetch a spotlight company')
+  @Get('spotlight')
+  findCompanySpotlight() {
+    return this.companyService.findCompanySpotlight();
+  }
+  
+  @Public()
   @ResponseMessage('Fetch a company')
   @Get(':id')
   findOne(@Param('id') id: string) {

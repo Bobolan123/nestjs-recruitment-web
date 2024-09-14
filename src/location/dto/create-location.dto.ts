@@ -4,7 +4,7 @@ import { Company } from 'src/company/entities/company.entity';
 export class CreateLocationDto {
   address: string;
 
-  address_city: string;
+  city: string;
 
   address1: string;
 

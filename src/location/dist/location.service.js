@@ -61,7 +61,7 @@ var LocationService = /** @class */ (function () {
                     case 0:
                         location = new location_entity_1.Location();
                         location.address = createLocationDto.address;
-                        location.address_city = createLocationDto.address_city;
+                        location.city = createLocationDto.city;
                         location.company = createLocationDto.company; // @IsNotEmpty() validation should ensure this is filled
                         return [4 /*yield*/, this.locationRepository.save(location)];
                     case 1:
@@ -101,7 +101,7 @@ var LocationService = /** @class */ (function () {
                         location = _a.sent();
                         if (!location) return [3 /*break*/, 3];
                         location.address = updateLocationDto.address;
-                        location.address_city = updateLocationDto.address_city;
+                        location.city = updateLocationDto.city;
                         location.company = updateLocationDto.company; // @IsNotEmpty() validation should ensure this is filled
                         return [4 /*yield*/, this.locationRepository.save(location)];
                     case 2:
