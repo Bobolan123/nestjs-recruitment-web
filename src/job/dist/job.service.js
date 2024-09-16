@@ -92,11 +92,12 @@ var JobService = /** @class */ (function () {
                                 order: { created_at: qs === null || qs === void 0 ? void 0 : qs.sort },
                                 take: limit,
                                 skip: offset,
-                                relations: ['company', 'skills', 'resumes'],
+                                relations: ['company', 'company.locations', 'skills', 'resumes'],
                                 select: {
                                     company: {
                                         logo: true,
-                                        name: true
+                                        name: true,
+                                        locations: true
                                     },
                                     skills: {
                                         name: true

@@ -36,11 +36,12 @@ export class JobService {
       order: { created_at: qs?.sort },
       take: limit,
       skip: offset,
-      relations: ['company', 'skills', 'resumes'],
+      relations: ['company','company.locations', 'skills', 'resumes'],
       select: {
         company: {
           logo: true,
           name: true,
+          locations:true
         },
         skills: {
           name: true,
