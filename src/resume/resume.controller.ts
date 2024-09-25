@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { ResumeService } from './resume.service';
 import { CreateResumeDto } from './dto/create-resume.dto';
@@ -42,8 +43,12 @@ export class ResumeController {
 
   @Public()
   @Get('read')
-  findAll() {
-    return this.resumeService.findAll();
+  findAll(
+    @Query('page') curPage: string,
+    @Query('limit') limit: string,
+    @Query() qs: any,
+  ) {
+    return this.resumeService.findAll(+curPage, +limit, qs);
   }
 
   @Public()

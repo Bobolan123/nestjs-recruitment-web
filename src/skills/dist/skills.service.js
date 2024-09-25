@@ -45,143 +45,147 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.CompanyService = void 0;
+exports.SkillsService = void 0;
 var common_1 = require("@nestjs/common");
+var skill_entity_1 = require("./entities/skill.entity");
 var typeorm_1 = require("@nestjs/typeorm");
-var company_entity_1 = require("./entities/company.entity");
-var CompanyService = /** @class */ (function () {
-    function CompanyService(companyRepository) {
-        this.companyRepository = companyRepository;
+var typeorm_2 = require("typeorm"); // Import In operator
+var SkillsService = /** @class */ (function () {
+    function SkillsService(skillRepository, mailerService) {
+        this.skillRepository = skillRepository;
+        this.mailerService = mailerService;
     }
-    CompanyService.prototype.create = function (createCompanyDto) {
+    SkillsService.prototype.create = function (createSkillDto) {
         return __awaiter(this, void 0, Promise, function () {
-            var company;
+            var name, skill, savedSkill;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        company = new company_entity_1.Company();
-                        company.name = createCompanyDto.name;
-                        company.briefInformation = createCompanyDto.briefInformation;
-                        company.type = createCompanyDto.type;
-                        company.industry = createCompanyDto.industry;
-                        company.size = createCompanyDto.size;
-                        company.description = createCompanyDto.description;
-                        company.logo = createCompanyDto.logo;
-                        company.skills = createCompanyDto.skills;
-                        company.locations = createCompanyDto.locations;
-                        return [4 /*yield*/, this.companyRepository.save(company)];
+                        name = createSkillDto.name;
+                        skill = new skill_entity_1.Skill();
+                        skill.name = name; // Assign the name to the skill
+                        return [4 /*yield*/, this.skillRepository.save(skill)];
                     case 1:
-                        _a.sent();
-                        return [2 /*return*/, company];
+                        savedSkill = _a.sent();
+                        return [2 /*return*/, savedSkill];
                 }
             });
         });
     };
-    CompanyService.prototype.findAll = function (curPage, limit, qs) {
+    SkillsService.prototype.findAll = function (curPage, limit, qs) {
         if (limit === void 0) { limit = 10; }
-        return __awaiter(this, void 0, void 0, function () {
-            var offset, _a, result, total;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+        return __awaiter(this, void 0, Promise, function () {
+            var offset, skills;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         offset = (curPage - 1) * limit;
-                        return [4 /*yield*/, this.companyRepository.findAndCount({
-                                where: {
-                                    locations: {
-                                        city: qs.city
-                                    }
+                        return [4 /*yield*/, this.skillRepository.find({
+                                relations: {
+                                    jobs: true
                                 },
-                                take: limit,
-                                skip: offset,
-                                relations: ['skills', 'jobs', 'locations'],
-                                order: {
-                                    created_at: qs.sort
-                                }
+                                take: limit || null,
+                                skip: offset || null
                             })];
                     case 1:
-                        _a = _b.sent(), result = _a[0], total = _a[1];
-                        return [2 /*return*/, {
-                                companies: result,
-                                totalCompanies: total,
-                                totalPages: Math.ceil(total / limit)
-                            }];
+                        skills = _a.sent();
+                        return [2 /*return*/, skills];
                 }
             });
         });
     };
-    CompanyService.prototype.findOne = function (id) {
+    SkillsService.prototype.findByIds = function (ids) {
         return __awaiter(this, void 0, Promise, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.companyRepository.findOne({
-                        where: { id: id },
-                        relations: {
-                            skills: true
-                        },
-                        select: {
-                            created_at: false,
-                            description: false
-                        }
-                    })];
-            });
-        });
-    };
-    CompanyService.prototype.findCompanySpotlight = function () {
-        return __awaiter(this, void 0, Promise, function () {
-            var query;
+            var jobs;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.companyRepository
-                            .createQueryBuilder('company')
-                            // .leftJoinAndSelect('company.skills', 'skills')
-                            .leftJoinAndSelect('company.jobs', 'jobs')
-                            .leftJoinAndSelect('company.locations', 'locations')
-                            .select()
-                            .orderBy('RANDOM()')
-                            .getOne()];
+                    case 0: return [4 /*yield*/, this.skillRepository.find({
+                            where: {
+                                id: typeorm_2.In(ids)
+                            },
+                            relations: ['jobs']
+                        })];
                     case 1:
-                        query = _a.sent();
-                        return [2 /*return*/, query];
+                        jobs = _a.sent();
+                        return [2 /*return*/, jobs];
                 }
             });
         });
     };
-    CompanyService.prototype.update = function (id, updateCompanyDto) {
+    SkillsService.prototype.getEmail = function (data) {
         return __awaiter(this, void 0, Promise, function () {
-            var company;
+            var skills, getEmail;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.findByIds(data.ids)];
+                    case 1:
+                        skills = _a.sent();
+                        return [4 /*yield*/, this.mailerService.sendMail({
+                                to: data.email,
+                                subject: 'Jobs related to your skills',
+                                template: './jobs',
+                                context: {
+                                    skills: skills
+                                }
+                            })];
+                    case 2:
+                        getEmail = _a.sent();
+                        if (getEmail) {
+                            return [2 /*return*/, 'Sent Email successfully'];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SkillsService.prototype.findOne = function (id) {
+        return this.skillRepository.findOne({
+            where: { id: id }
+        });
+    };
+    SkillsService.prototype.update = function (id, updateSkillDto) {
+        return __awaiter(this, void 0, Promise, function () {
+            var existingSkill, updatedSkill;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.findOne(id)];
                     case 1:
-                        company = _a.sent();
-                        company.name = updateCompanyDto.name || company.name;
-                        company.description = updateCompanyDto.description || company.description;
-                        company.logo = updateCompanyDto.logo || company.logo;
-                        company.skills = updateCompanyDto.skills;
-                        return [4 /*yield*/, this.companyRepository.save(company)];
+                        existingSkill = _a.sent();
+                        if (!existingSkill) {
+                            throw new common_1.BadRequestException('Skill not found');
+                        }
+                        updatedSkill = Object.assign(existingSkill, updateSkillDto);
+                        return [4 /*yield*/, this.skillRepository.save(updatedSkill)];
                     case 2:
                         _a.sent();
-                        return [2 /*return*/, company];
+                        return [2 /*return*/, updatedSkill];
                 }
             });
         });
     };
-    CompanyService.prototype.remove = function (id) {
+    SkillsService.prototype.remove = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var del;
+            var skillToRemove;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.companyRepository["delete"](id)];
+                    case 0: return [4 /*yield*/, this.findOne(id)];
                     case 1:
-                        del = _a.sent();
-                        return [2 /*return*/, del];
+                        skillToRemove = _a.sent();
+                        if (!skillToRemove) {
+                            throw new common_1.BadRequestException('Skill not found');
+                        }
+                        return [4 /*yield*/, this.skillRepository["delete"](id)];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/, {}];
                 }
             });
         });
     };
-    CompanyService = __decorate([
+    SkillsService = __decorate([
         common_1.Injectable(),
-        __param(0, typeorm_1.InjectRepository(company_entity_1.Company))
-    ], CompanyService);
-    return CompanyService;
+        __param(0, typeorm_1.InjectRepository(skill_entity_1.Skill))
+    ], SkillsService);
+    return SkillsService;
 }());
-exports.CompanyService = CompanyService;
+exports.SkillsService = SkillsService;

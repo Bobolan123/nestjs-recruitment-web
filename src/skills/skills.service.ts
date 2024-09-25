@@ -23,11 +23,15 @@ export class SkillsService {
     return savedSkill;
   }
 
-  async findAll(): Promise<Skill[]> {
+  async findAll(curPage: number, limit: number = 10, qs?): Promise<Skill[]> {
+    const offset = (curPage - 1) * limit;
+
     const skills = await this.skillRepository.find({
       relations: {
         jobs: true,
       },
+      take: limit || null,
+      skip: offset || null,
     });
     return skills;
   }

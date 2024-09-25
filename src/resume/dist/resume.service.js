@@ -45,143 +45,118 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.CompanyService = void 0;
+exports.ResumeService = void 0;
 var common_1 = require("@nestjs/common");
+var resume_entity_1 = require("./entities/resume.entity");
 var typeorm_1 = require("@nestjs/typeorm");
-var company_entity_1 = require("./entities/company.entity");
-var CompanyService = /** @class */ (function () {
-    function CompanyService(companyRepository) {
-        this.companyRepository = companyRepository;
+var uuid_1 = require("uuid");
+function generateUniqueID() {
+    return uuid_1.v4(); // Generate a UUID (version 4)
+}
+var ResumeService = /** @class */ (function () {
+    function ResumeService(resumeRepository) {
+        this.resumeRepository = resumeRepository;
     }
-    CompanyService.prototype.create = function (createCompanyDto) {
+    ResumeService.prototype.createCV = function (createResumeDto, cvFile) {
         return __awaiter(this, void 0, Promise, function () {
-            var company;
+            var resume, savedResume;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        company = new company_entity_1.Company();
-                        company.name = createCompanyDto.name;
-                        company.briefInformation = createCompanyDto.briefInformation;
-                        company.type = createCompanyDto.type;
-                        company.industry = createCompanyDto.industry;
-                        company.size = createCompanyDto.size;
-                        company.description = createCompanyDto.description;
-                        company.logo = createCompanyDto.logo;
-                        company.skills = createCompanyDto.skills;
-                        company.locations = createCompanyDto.locations;
-                        return [4 /*yield*/, this.companyRepository.save(company)];
+                        resume = new resume_entity_1.Resume();
+                        resume.status = createResumeDto.status;
+                        resume.job = createResumeDto.job;
+                        resume.user = createResumeDto.user;
+                        return [4 /*yield*/, this.resumeRepository.save(resume)];
                     case 1:
-                        _a.sent();
-                        return [2 /*return*/, company];
+                        savedResume = _a.sent();
+                        return [2 /*return*/, savedResume];
                 }
             });
         });
     };
-    CompanyService.prototype.findAll = function (curPage, limit, qs) {
+    ResumeService.prototype.findAll = function (curPage, limit, qs) {
         if (limit === void 0) { limit = 10; }
-        return __awaiter(this, void 0, void 0, function () {
-            var offset, _a, result, total;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+        return __awaiter(this, void 0, Promise, function () {
+            var offset, resumes;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         offset = (curPage - 1) * limit;
-                        return [4 /*yield*/, this.companyRepository.findAndCount({
-                                where: {
-                                    locations: {
-                                        city: qs.city
-                                    }
+                        return [4 /*yield*/, this.resumeRepository.find({
+                                relations: ['user', 'job', 'job.company'],
+                                order: {
+                                    id: 'ASC'
                                 },
                                 take: limit,
-                                skip: offset,
-                                relations: ['skills', 'jobs', 'locations'],
-                                order: {
-                                    created_at: qs.sort
-                                }
+                                skip: offset
                             })];
                     case 1:
-                        _a = _b.sent(), result = _a[0], total = _a[1];
-                        return [2 /*return*/, {
-                                companies: result,
-                                totalCompanies: total,
-                                totalPages: Math.ceil(total / limit)
-                            }];
+                        resumes = _a.sent();
+                        return [2 /*return*/, resumes];
                 }
             });
         });
     };
-    CompanyService.prototype.findOne = function (id) {
+    ResumeService.prototype.findOne = function (id) {
         return __awaiter(this, void 0, Promise, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.companyRepository.findOne({
-                        where: { id: id },
-                        relations: {
-                            skills: true
-                        },
-                        select: {
-                            created_at: false,
-                            description: false
-                        }
-                    })];
-            });
-        });
-    };
-    CompanyService.prototype.findCompanySpotlight = function () {
-        return __awaiter(this, void 0, Promise, function () {
-            var query;
+            var resume;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.companyRepository
-                            .createQueryBuilder('company')
-                            // .leftJoinAndSelect('company.skills', 'skills')
-                            .leftJoinAndSelect('company.jobs', 'jobs')
-                            .leftJoinAndSelect('company.locations', 'locations')
-                            .select()
-                            .orderBy('RANDOM()')
-                            .getOne()];
+                    case 0: return [4 /*yield*/, this.resumeRepository.findOne({
+                            where: { id: id },
+                            relations: ['user', 'job', 'job.company']
+                        })];
                     case 1:
-                        query = _a.sent();
-                        return [2 /*return*/, query];
+                        resume = _a.sent();
+                        return [2 /*return*/, resume];
                 }
             });
         });
     };
-    CompanyService.prototype.update = function (id, updateCompanyDto) {
+    ResumeService.prototype.update = function (id, updateResumeDto) {
         return __awaiter(this, void 0, Promise, function () {
-            var company;
+            var existResume;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.findOne(id)];
                     case 1:
-                        company = _a.sent();
-                        company.name = updateCompanyDto.name || company.name;
-                        company.description = updateCompanyDto.description || company.description;
-                        company.logo = updateCompanyDto.logo || company.logo;
-                        company.skills = updateCompanyDto.skills;
-                        return [4 /*yield*/, this.companyRepository.save(company)];
+                        existResume = _a.sent();
+                        if (!existResume) return [3 /*break*/, 3];
+                        existResume.job = updateResumeDto.job;
+                        existResume.status = updateResumeDto.status;
+                        return [4 /*yield*/, this.resumeRepository.save(existResume)];
                     case 2:
                         _a.sent();
-                        return [2 /*return*/, company];
+                        return [2 /*return*/, existResume];
+                    case 3: throw new common_1.BadRequestException('Not found resume');
                 }
             });
         });
     };
-    CompanyService.prototype.remove = function (id) {
+    ResumeService.prototype.remove = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var del;
+            var resumeToRemove;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.companyRepository["delete"](id)];
+                    case 0: return [4 /*yield*/, this.findOne(id)];
                     case 1:
-                        del = _a.sent();
-                        return [2 /*return*/, del];
+                        resumeToRemove = _a.sent();
+                        if (!resumeToRemove) {
+                            throw new common_1.BadRequestException('Not found resume');
+                        }
+                        return [4 /*yield*/, this.resumeRepository["delete"](id)];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/, {}];
                 }
             });
         });
     };
-    CompanyService = __decorate([
+    ResumeService = __decorate([
         common_1.Injectable(),
-        __param(0, typeorm_1.InjectRepository(company_entity_1.Company))
-    ], CompanyService);
-    return CompanyService;
+        __param(0, typeorm_1.InjectRepository(resume_entity_1.Resume))
+    ], ResumeService);
+    return ResumeService;
 }());
-exports.CompanyService = CompanyService;
+exports.ResumeService = ResumeService;

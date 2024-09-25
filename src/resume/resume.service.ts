@@ -32,12 +32,16 @@ export class ResumeService {
     return savedResume;
   }
 
-  async findAll(): Promise<Resume[]> {
+  async findAll(curPage: number, limit: number = 10, qs?): Promise<Resume[]> {
+    const offset = (curPage - 1) * limit;
+
     const resumes = await this.resumeRepository.find({
       relations: ['user', 'job', 'job.company'],
       order: {
         id: 'ASC',
       },
+      take: limit,
+      skip: offset,
     });
     return resumes;
   }

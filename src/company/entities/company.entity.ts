@@ -23,17 +23,25 @@ export class Company {
     name: string;
 
     @Column({ type: 'varchar', nullable: true })
+    briefInformation: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    type: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    industry: string;
+
+    @Column({ type: 'varchar', nullable: true })
+    size: string;
+    
+    @Column({ type: 'varchar', nullable: true })
     description: string;
 
     @Column({ type: 'varchar', nullable: true })
     logo: string;
 
-
     @Column({ type: 'varchar', nullable: true })
     country: string;
-
-    @Column({ type: 'varchar', nullable: true })
-    company_type: string;
 
     @OneToMany(() => Job, (job) => job.company, {
         onDelete: 'CASCADE',

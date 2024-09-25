@@ -15,9 +15,14 @@ export class CompanyService {
   async create(createCompanyDto: CreateCompanyDto): Promise<Company> {
     const company = new Company();
     company.name = createCompanyDto.name;
+    company.briefInformation = createCompanyDto.briefInformation;
+    company.type = createCompanyDto.type;
+    company.industry = createCompanyDto.industry;
+    company.size = createCompanyDto.size;    
     company.description = createCompanyDto.description;
     company.logo = createCompanyDto.logo;
     company.skills = createCompanyDto.skills;
+    company.locations = createCompanyDto.locations
 
     await this.companyRepository.save(company);
 
